@@ -2,14 +2,14 @@
 // this is the only part of the file you need to edit!
 
 const quotes = [
-  { text: ", design, and art", source: "Scott" },
-  { text: "a chance for code to be wrong", source: "Sara" },
-  { text: "surprise, exploration, and aesthetic exploration", source: "Sally" },
-  { text: "process over results", source: "Sam" },
-  { text: "form over ", source: "Sean" },
-  { text: "iterative and experimental", source: "Scooby" },
-  { text: "a community of practice", source: "Seth" },
-  { text: "an opportunity to stick it to the man", source: "Shifty-eyed Susan" }
+  { text: "unique because it makes kinetic pictures of indefinite duration and responsive", source: "Casey" },
+  { text: "the painter who stands back between brushstrokes ", source: " Turkle and Papert" },
+  { text: "A parallel development to the emergence of computing and its application in art", source: "Ilias" },
+  { text: "generative, reflexive and anarchist intelligence of art with technical languge ", source: "Fuller" },
+  { text: "can be listed as algorithms, randomness, semiotics and interactivity", source: "Fider" },
+  { text: "to imagine a languge is to imagine life", source: "Ludwing" },
+  { text: "the only languge that is excecutable", source: "Alexander" },
+  { text: "a system of signs expressing ideas", source: "Seussure" }
 ];
 // no need to edit anything below this line! 
 // if you have made an error, you can check your history to see what might have gone wrong
@@ -21,7 +21,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   // Seed with millis() so each page load gives a different quote.
   randomSeed(millis());
-  textSize(32);
+  textSize(21);
   fill(10, 255, 10);
   // calls the function to pick a quote
   pickQuote();
@@ -33,17 +33,17 @@ function pickQuote() {
 }
 
 function draw() {
-  background(255, 20, 250); // set the background color
+  background(250, 10, 150); // set the background color
   drawQuote();  // draw the quote on screen
 }
 
 function drawQuote() {   // draw text
-  textAlign(CENTER, CENTER);
+  textAlign(LEFT, CENTER);
   text("Creative Coding is.....", width / 2, height / 2 - 48);
   textStyle(BOLD);
   text("'" + current.text + "'", width / 2, height / 2);
   textAlign(RIGHT, CENTER);
-  text("-" + current.source, width - 100, height - 100);
+  text("-" + current.source, width - 200, height - 100);
 
 }
 
