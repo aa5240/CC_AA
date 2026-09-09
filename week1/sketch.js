@@ -39,9 +39,9 @@ function draw() {
 
 function drawQuote() {   // draw text
   textAlign(LEFT, CENTER);
-  text("Creative Coding is.....", width / 2, height / 2 - 48);
+  text("Creative Coding is.....", width / 10, height / 12 - 48);
   textStyle(BOLD);
-  text("'" + current.text + "'", width / 2, height / 2);
+  text("'" + current.text + "'", width / 2, height / 28);
   textAlign(RIGHT, CENTER);
   text("-" + current.source, width - 200, height - 100);
 
