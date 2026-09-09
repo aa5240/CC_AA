@@ -2,11 +2,11 @@
 // this is the only part of the file you need to edit!
 
 const quotes = [
-  { text: "the intersection of programming, design, and art", source: "Scott" },
+  { text: ", design, and art", source: "Scott" },
   { text: "a chance for code to be wrong", source: "Sara" },
   { text: "surprise, exploration, and aesthetic exploration", source: "Sally" },
   { text: "process over results", source: "Sam" },
-  { text: "form over function", source: "Sean" },
+  { text: "form over ", source: "Sean" },
   { text: "iterative and experimental", source: "Scooby" },
   { text: "a community of practice", source: "Seth" },
   { text: "an opportunity to stick it to the man", source: "Shifty-eyed Susan" }
