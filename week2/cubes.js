@@ -30,7 +30,6 @@ ellipse(width/2, height/2, 1000, r);
   rectMode(CENTER);
   fill(r, 55, 255);
   rect((width/4), 100, r, s3[1]);
-  translate(10, 100, 20)
 //blue rectangle (number 2)
   rectMode(LEFT);
   fill(55, r, 255);
@@ -51,7 +50,6 @@ ellipse(width/2, height/2, 1000, r);
   rectMode(RIGHT);
   fill(300, r, 255);
   rect(width/4*3,r, 100, 400);
-   translate(10, 100, 20)
   //blue rectangle (number 7)
   rectMode(RIGHT);
   fill(r, 0, 100);
@@ -60,7 +58,7 @@ ellipse(width/2, height/2, 1000, r);
   rectMode(RIGHT);
   fill(0, r, 150);
   rect(width/4*3,100, 30, 40);
-   translate(10, 100, 20)
+  
   //blue rectangle (number 9)
   rectMode(RIGHT);
   fill(r, r, 100);
