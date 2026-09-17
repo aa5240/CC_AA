@@ -15,6 +15,14 @@ function setup() {
 function draw() {
   background(255, 0, 0);
   text("p5.Polar Template", 100, height / 2);
+    setCenter(width/2, height/2);
+    background(220);
+    polarEllipses(10, 0, 0, 100,)
+        fill(args[0]*40, args[0]*40, args[0]*40, 160);
+        args[2] = args[0]*6;
+        args[3] = args[0]*6;
+        return args;     
+    };
 
   // Insert your drawing here
   // for loop - a piece of code
@@ -32,7 +40,7 @@ function draw() {
     }
     ellipse(j + width / 2, j + height / 2, 10, 10);
   }
-}
+
 
 function drawing01() {
   // Drawing logic can be added here.
