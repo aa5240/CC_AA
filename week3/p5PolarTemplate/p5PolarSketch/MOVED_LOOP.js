@@ -19,7 +19,6 @@ function draw() {
   console.log(r);
   background(r, r, 255);
   ellipse(r, r, 20, 20);
- // My first nested for loop
  fill (r,255,0)
   strokeWeight(10);
   const startingX = 20;
@@ -28,7 +27,7 @@ function draw() {
   const space = r; // space in between center of shapes
   for (i = 0; i < 5; i++) {
     for (j = 0; j < 5; j++) {
-      polarEllipses(startingX + (i * space), startingY + j * space, s);
+      polarEllipses(50, 180, 180, r);
       //console.log(j);
 
 }
