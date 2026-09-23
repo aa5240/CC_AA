@@ -60,7 +60,7 @@ function drawing02() {
     } else {
       fill(0, 0, 255);
     }
-    ellipse(j + width / 2, j + height / 2, 10, 10);
+  
   }
 }
 
