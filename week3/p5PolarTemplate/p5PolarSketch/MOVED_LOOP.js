@@ -6,7 +6,7 @@
 
 function setup() {
   createCanvas(500, 500);
-noise()
+
   }
 
 function mousePressed() {   
@@ -22,7 +22,7 @@ function mousePressed() {
   const space = r; // space in between center of shapes
   for (i = 0; i < 5; i++) {
     for (j = 0; j < 5; j++) {
-      polarEllipses(r, 40, r, r);
+      polarEllipses(r, 40, 40, r);
       //console.log(j);
     }
   }
@@ -33,13 +33,21 @@ shiftDistScale = function(_scale, distance) {
   this.translate(0, r);}
 
 function draw() { 
+
+   setCenter(width/2, height/2);
+  let n = map(mouseX, 0, width, 1, 20); // num triangles
+  let r = map(mouseX, 0, width, 150, 230); // radius
+ fill(r,10,0,);
+  polarTriangles(n, r, 0 );
+  // control of pattern
          fill(252, 100, 20);
-  polarEllipses(8, 10, 10);
+  polarEllipses(n, r, 10);
   fill(23, 175, 17);
-  polarEllipses(12, 40, 280, 2);
+  polarEllipses(n, r, 2);
   fill(3, 248, 200, 12);
-  polarEllipses(10, 80, 80, 160);
+  polarEllipses(n, r, 16);
   polarEllipses(30, 40+sin(frameCount/10)*20, 80, 80
 );
+
 
 }
