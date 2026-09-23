@@ -35,10 +35,10 @@ shiftDistScale = function(_scale, distance) {
 function draw() { 
 
    setCenter(width/2, height/2);
-  let n = map(mouseX, 0, width, 1, 20); // num triangles
-  let r = map(mouseX, 0, width, 150, 230); // radius
+  let n = map(mouseX, 0, width, 1,15); // number of shapes
+  let r = map(mouseX, 0, width, 30, 90); // radius
  fill(r,10,0,);
-  polarTriangles(n, r, 0 );
+  polarTriangles(n, r, 10 );
   // control of pattern
          fill(252, 100, 20);
   polarEllipses(n, r, 10);
