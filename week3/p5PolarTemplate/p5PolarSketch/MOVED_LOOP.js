@@ -6,14 +6,7 @@
 
 function setup() {
   createCanvas(500, 500);
-  // Insert your drawing here
-  //size of shapes
-let s1= 40;//size of red circle
-let s2= 50;//size of green circle
-// below is an array of sizes for the rectangle, but I will just use one size for now
-let s3= [150,1000];//size of blue rectangle
-console.log(s3);
-
+noise()
   }
 
 function mousePressed() {   
@@ -29,7 +22,7 @@ function mousePressed() {
   const space = r; // space in between center of shapes
   for (i = 0; i < 5; i++) {
     for (j = 0; j < 5; j++) {
-      polarEllipses(r, 40, 40, r);
+      polarEllipses(r, 40, r, r);
       //console.log(j);
     }
   }
