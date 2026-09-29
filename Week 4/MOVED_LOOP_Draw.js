@@ -11,10 +11,10 @@ function setup() {
 
 function draw() {   
   r = random(30,600);
-  console.log(r);
-  background(r, r, 255);
-  ellipse(r, r, 20, 20);
- fill (r,255,0)
+  console.log(10);
+  background(0, 0, 255);
+  ellipse(50, 100, 20, 20);
+ fill (0,255,0)
   strokeWeight(1);
   const startingX = 20;
   const startingY = 20;
@@ -22,28 +22,24 @@ function draw() {
   const space = r; // space in between center of shapes
   for (i = 0; i < 5; i++) {
     for (j = 0; j < 5; j++) {
-      polarEllipses(r, 40, 40, r);
+      polarEllipses(100, 40, 40, 40);
       //console.log(j);
     }
   }
 }
 
 function draw() { 
-
-   setCenter(width/2, height/2);
-  let n = map(mouseX, 0, width, 1,15); // number of shapes
-  let r = map(mouseX, 0, width, 30, 90); // radius
+setCenter(width/2, height/2);
  nofill();
-  polarTriangles(n, r, 10 );
+  polarTriangles(30, 50, 10 );
   // control of pattern
          Nofill();
-  polarEllipses(n, r, 10);
+  polarEllipses(200, 50, 10);
   fill(23, 175, 17);
-  polarEllipses(n, r, 2);
+  polarEllipses(10, 10, 2);
   fill(3, 248, 200, 12);
-  polarEllipses(n, r, 16);
-  polarEllipses(30, 40+sin(frameCount/10)*20, 80, 80
-);
+  polarEllipses(100, 10, 16);
+
 
 
 }
