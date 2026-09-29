@@ -40,9 +40,9 @@ function myDrawing() {
 setCenter(width/2, height/2);
 polarTriangles(3, 500, 10 );
   // control of pattern
- polarEllipses(20, 500, 10);
- polarEllipses(5, 200, 10);
- polarEllipses(3, 100, 16);
+ polarEllipses(20, 500, 90);
+ polarEllipses(20, 200, 40);
+ polarEllipses(30, 100, 20);
 }
 
 
