@@ -43,15 +43,11 @@ function draw() {
   strokeWeight(1); 
   let s = random(50,200);
 setCenter(width/2, height/2);
- nofill();
-  polarTriangles(30, 50, 10 );
+polarTriangles(30, 50, 10 );
   // control of pattern
-         Nofill();
-  polarEllipses(200, 50, 10);
-  fill(23, 175, 17);
-  polarEllipses(10, 10, 2);
-  fill(3, 248, 200, 12);
-  polarEllipses(100, 10, 16);
+ polarEllipses(200, 50, 10);
+ polarEllipses(10, 10, 2);
+ polarEllipses(100, 10, 16);
 
 function regenerate(){
   myRandomSeed = round(millis()); 
