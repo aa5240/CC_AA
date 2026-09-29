@@ -62,6 +62,5 @@ function drawing02() {
   }
 }
 
-
-
+//SPG drawing. 
 
