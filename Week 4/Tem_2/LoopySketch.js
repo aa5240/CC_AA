@@ -1,5 +1,5 @@
 
-// Plotter Template #2 (includes p5.Polar and p5.plotSvg)
+// Plotter drawing 9/30/2026 (includes p5.Polar and p5.plotSvg)
 
 // Press "s" to export drawing as SVG
 
@@ -33,16 +33,18 @@ function draw() {
 }
 ////////////////////////////////////////
 
-function myDrawing() {
+function mousePressed() {   
+  r = random(30,400);
+  console.log(r);
   // insert your drawing here
   strokeWeight(1); 
-  let s = random(50,200);
+  let s = random(50,400);
 setCenter(width/2, height/2);
-polarTriangles(3, 500, 10 );
+polarTriangles(s, r, 10 );
   // control of pattern
- polarEllipses(20, 500, 90);
- polarEllipses(20, 200, 40);
- polarEllipses(30, 100, 20);
+ polarEllipses(20, s, s);
+ polarEllipses(20, s, r);
+ polarEllipses(s, s, r);
 }
 
 
