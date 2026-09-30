@@ -45,6 +45,13 @@ polarTriangles(s, r, 10 );
  polarEllipses(20, s, s);
  polarEllipses(20, s, r);
  polarEllipses(s, s, r);
+  const startingX = 20;
+  const startingY = 20;
+  for (i = 0; i < 5; i++) {
+    for (j = 0; j < 5; j++) {
+      ellipse(startingX + (i * space), startingY + j * space, s);
+      //console.log(j);
+    }}
 }
 
 
