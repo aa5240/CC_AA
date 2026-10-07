@@ -31,13 +31,15 @@ function shaderCallback() {
   let value = map(sinVal, -1, 1, 0, 1);
 
   // Each color is [R, G, B, A] with values from 0 to 1.
-  let cyan = [0, 0.5, 1, 1];
-  let orange = [1, 0.5, 0, 1];
+  let red = [255, 0, 0, 0.25];
+  let orange = [0, 0, 139, 1];
+  let green = [0, 255, 0, 0.25];
+  // Found on https://html-color.codes/blue#google_vignette
 
   finalColor.begin();
 
   // mix() blends between cyan (when value = 0) and orange (when value = 1).
-  finalColor.set(mix(cyan, orange, value));
+  finalColor.set(mix(red, green, blue));
 
   finalColor.end();
 }
@@ -48,8 +50,8 @@ function setPositionAndColor() {
   circleX = random(0, width);
   circleY = random(0, height);
 
-  // Set R, G, and B to random values in the range (100, 256)
-  circleColor = color(random(100, 256), random(100, 256), random(100, 256));
+  // Set R, G, and B to random values in the range (10, 360)(for a more vibrant color)
+  circleColor = color(random(10, 360), random(10, 360), random(10, 360));
 }
 
 function draw() {
@@ -60,14 +62,24 @@ function draw() {
     ['green', 0.25],
     ['blue', 1]
   ], millis() / 10000 % 1));
+   
+  let amplitude = width / 2;
+  let xOffset = width / 4;
+
+  let period = periodSec * getTargetFrameRate();
+
+  let floorTerm = floor(frameCount / period + 1);
+  let absTerm = abs(frameCount / period - floorTerm);
+
+  let x = 2 * absTerm * amplitude;
+  let y = height / 2;
+
+    r = random(0,360);
+  console.log(r);
   // Move origin to center of canvas
   // Draw the clock background
   noStroke();
-  ellipse(0, 0, clockDiameter + 25, clockDiameter + 25);
-  (frameCount, y, 25);
-  ellipse(0, 0, clockDiameter, clockDiameter);
-  (frameCount, y, 25);
-
+  
   // Calculate angle for each hand
   let secondAngle = map(second(), 0, 60, 0, 360);
   let minuteAngle = map(minute(), 0, 60, 0, 360);
@@ -79,29 +91,29 @@ function draw() {
   
   push();
   rotate(secondAngle);
-  line(0, 0, 0, -secondsRadius);
+  ellipse(0, x, r, -secondsRadius);
   pop();
 
   // Minute hand
   
   push();
   rotate(minuteAngle);
-  line(0, 0, 0, -minutesRadius);
+  ellipse(0, x, r, -minutesRadius);
   pop();
 
   // Hour hand
   
   push();
   rotate(hourAngle);
-  line(0, 0, 0, -hoursRadius);
+  ellipse(0, x, r, -hoursRadius);
   pop();
 
   // Tick markers around perimeter of clock
-
   push();
-  for (let ticks = 0; ticks < 60; ticks += 1) {
-    point(0, -secondsRadius);
-    rotate(6);
+  for (let ticks = r; ticks < 600; ticks += 1) {
+    point(r, secondsRadius);
+    rotate(r);
+
   }
   pop();
 }
