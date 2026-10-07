@@ -81,10 +81,6 @@ function draw() {
   pop();
 
   // Tick markers around perimeter of clock
-
-
-
-
   push();
   for (let ticks = 0; ticks < 60; ticks += 1) {
     point(0, -secondsRadius);
@@ -92,7 +88,6 @@ function draw() {
   }
   pop();
     shader(myShader);
-
 
 
 }
