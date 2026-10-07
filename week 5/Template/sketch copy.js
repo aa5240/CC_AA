@@ -5,7 +5,6 @@ let hoursRadius;
 let clockDiameter;
 
 function setup() {
-
   createCanvas(710, 400, WEBGL);
   stroke(255);
   angleMode(DEGREES);
@@ -19,6 +18,7 @@ function setup() {
   clockDiameter = radius * 1.7;
 
   describe('Functioning pink clock on a grey background.');
+  
 }
 function shaderCallback() {
   // shaderCallback runs on the GPU. millis() gives ms since start; multiply by 0.001 for seconds.
@@ -42,14 +42,31 @@ function shaderCallback() {
   finalColor.end();
 }
 
+
+function setPositionAndColor() {
+  // Set the position to a random value (within the canvas)
+  circleX = random(0, width);
+  circleY = random(0, height);
+
+  // Set R, G, and B to random values in the range (100, 256)
+  circleColor = color(random(100, 256), random(100, 256), random(100, 256));
+}
+
 function draw() {
-  background(230);
+  // The background goes from white to red to green to blue fill
+  background(paletteLerp([
+    ['white', 0],
+    ['red', 0.05],
+    ['green', 0.25],
+    ['blue', 1]
+  ], millis() / 10000 % 1));
   // Move origin to center of canvas
-  translate(width /2, height /2);
   // Draw the clock background
   noStroke();
   ellipse(0, 0, clockDiameter + 25, clockDiameter + 25);
+  (frameCount, y, 25);
   ellipse(0, 0, clockDiameter, clockDiameter);
+  (frameCount, y, 25);
 
   // Calculate angle for each hand
   let secondAngle = map(second(), 0, 60, 0, 360);
@@ -87,6 +104,4 @@ function draw() {
     rotate(6);
   }
   pop();
-
-
 }
