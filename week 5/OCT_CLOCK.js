@@ -125,10 +125,7 @@ function draw() {
   for (let ticks = r; ticks < 600; ticks += 1) {
     point(r, secondsRadius);
     rotate(r);
-
   }
   pop();
-
-    let m = month();
 
   };
