@@ -8,6 +8,7 @@ function setup() {
   createCanvas(710, 400);
   stroke(255);
   angleMode(DEGREES);
+  myShader = buildColorShader(shaderCallback);
 
   // Set radius for each shape based on canvas dimensions
   let radius = min(width, height) / 2;
@@ -18,18 +19,35 @@ function setup() {
 
   describe('Functioning pink clock on a grey background.');
 }
+function shaderCallback() {
+  // shaderCallback runs on the GPU. millis() gives ms since start; multiply by 0.001 for seconds.
+  let t = millis() * 0.001;
+
+  // sin(t) goes between -1 and 1 over time.
+  let sinVal = sin(t);
+
+  // map() remaps this from the range [-1, 1] to the range [0, 1].
+  let value = map(sinVal, -1, 1, 0, 1);
+
+  // Each color is [R, G, B, A] with values from 0 to 1.
+  let cyan = [0, 0.5, 1, 1];
+  let orange = [1, 0.5, 0, 1];
+
+  finalColor.begin();
+
+  // mix() blends between cyan (when value = 0) and orange (when value = 1).
+  finalColor.set(mix(cyan, orange, value));
+
+  finalColor.end();
+}
 
 function draw() {
-  background(230);
-
+  shader(myShader);
   // Move origin to center of canvas
   translate(width / 2, height / 2);
-
   // Draw the clock background
   noStroke();
-  fill(244, 122, 158);
   ellipse(0, 0, clockDiameter + 25, clockDiameter + 25);
-  fill(237, 34, 93);
   ellipse(0, 0, clockDiameter, clockDiameter);
 
   // Calculate angle for each hand
@@ -42,27 +60,27 @@ function draw() {
   // Second hand
   push();
   rotate(secondAngle);
-  strokeWeight(1);
+  noStroke()
   line(0, 0, 0, -secondsRadius);
   pop();
 
   // Minute hand
   push();
-  strokeWeight(2);
+noStroke()
   rotate(minuteAngle);
   line(0, 0, 0, -minutesRadius);
   pop();
 
   // Hour hand
   push();
-  strokeWeight(4);
+  noStroke()
   rotate(hourAngle);
   line(0, 0, 0, -hoursRadius);
   pop();
 
   // Tick markers around perimeter of clock
   push();
-  strokeWeight(2);
+  noStroke()
   for (let ticks = 0; ticks < 60; ticks += 1) {
     point(0, -secondsRadius);
     rotate(6);
