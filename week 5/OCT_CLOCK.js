@@ -128,4 +128,21 @@ function draw() {
   }
   pop();
 
-  };
+  let timeEnglish = moment().locale('en').format('LLLL');
+  let timeSpanish = moment().locale('es').format('LLLL');
+  let timeFrench = moment().locale('fr').format('LLLL');
+  let timeGerman = moment().locale('de').format('LLLL');
+  let timeKlingon = moment().locale('tlh').format('LLLL');
+  let timeArabic = moment().locale('ar').format('LLLL');
+
+  background(50);
+  textSize(24);
+  textAlign(CENTER);
+  fill(255);
+  text(timeEnglish, width / 2, 30);
+  text(timeSpanish, width / 2, 60);
+  text(timeFrench, width / 2, 90);
+  text(timeGerman, width / 2, 120);
+  text(timeKlingon, width / 2, 150);
+  text(timeArabic, width / 2, 180);
+};
