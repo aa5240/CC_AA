@@ -18,7 +18,6 @@ function setup() {
   hoursRadius = radius * 0.5;
   clockDiameter = radius * 1.7;
 
-  
 }
 function shaderCallback() {
   // shaderCallback runs on the GPU. millis() gives ms since start; multiply by 0.001 for seconds.
@@ -132,5 +131,4 @@ function draw() {
 
     let m = month();
 
- 
   };
