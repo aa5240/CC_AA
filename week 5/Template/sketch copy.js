@@ -5,7 +5,8 @@ let hoursRadius;
 let clockDiameter;
 
 function setup() {
-  createCanvas(WEBGL,710, 400);
+
+  createCanvas(710, 400, WEBGL);
   stroke(255);
   angleMode(DEGREES);
   myShader = buildColorShader(shaderCallback);
@@ -42,8 +43,9 @@ function shaderCallback() {
 }
 
 function draw() {
-// Move origin to center of canvas
-  translate(width / 2, height / 2);
+  background(230);
+  // Move origin to center of canvas
+  translate(width /2, height /2);
   // Draw the clock background
   noStroke();
   ellipse(0, 0, clockDiameter + 25, clockDiameter + 25);
@@ -63,18 +65,26 @@ function draw() {
   pop();
 
   // Minute hand
+
+
   push();
   rotate(minuteAngle);
   line(0, 0, 0, -minutesRadius);
   pop();
 
   // Hour hand
+
+
   push();
   rotate(hourAngle);
   line(0, 0, 0, -hoursRadius);
   pop();
 
   // Tick markers around perimeter of clock
+
+
+
+
   push();
   for (let ticks = 0; ticks < 60; ticks += 1) {
     point(0, -secondsRadius);
@@ -82,5 +92,7 @@ function draw() {
   }
   pop();
     shader(myShader);
+
+
 
 }
