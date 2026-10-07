@@ -17,7 +17,7 @@ function setup() {
   minutesRadius = radius * 0.6;
   hoursRadius = radius * 0.5;
   clockDiameter = radius * 1.7;
-
+// Based off of the clock example from https://p5js.org/examples/form-clock.html
 }
 function shaderCallback() {
   // shaderCallback runs on the GPU. millis() gives ms since start; multiply by 0.001 for seconds.
@@ -41,6 +41,7 @@ function shaderCallback() {
   finalColor.end();
 }
 
+// Based  off of the shader example from https://p5js.org/examples/3d-shader.html
 
 function setPositionAndColor() {
   // Set the position to a random value (within the canvas)
@@ -59,7 +60,7 @@ function draw() {
     ['green', 0.25],
     ['blue', 1]
   ], millis() / 10000 % 10));
-   
+   // Setting some movements through the amplitude and offset of the clock hands, I used the frameCount variable to create a dynamic effect that changes over time. The amplitude and offset values are calculated based on the width of the canvas, allowing for a responsive design that adapts to different screen sizes.
   let amplitude = width / 2;
   let xOffset = width / 4;
 
@@ -127,5 +128,5 @@ function draw() {
     rotate(r);
   }
   pop();
-  
+
 };

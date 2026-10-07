@@ -1,4 +1,4 @@
-
+// p5Polar Template
 
 function setup() {
   createCanvas(500, 500);
@@ -29,13 +29,13 @@ shiftDistScale = function(_scale, distance) {
   this.translate(0, r);}
 
 function draw() { 
-
+// P5.JS Reference frameCount A Number variable that tracks the number of frames drawn since the sketch started. frameCount's value is 0 inside setup(). It increments by 1 each time the code in draw() finishes executing.
    setCenter(width/2, height/2);
   let n = map(mouseX, 0, width, 1,15); // number of shapes
   let r = map(mouseX, 0, width, 30, 90); // radius
  fill(r,10,0,);
   polarTriangles(n, r, 10 );
-  // control of pattern
+  // control of pattern to set animation and movement through the drawing. I used the settings from tourials on P5.JS Reference frameCount A Number variable that tracks the number of frames drawn since the sketch started. frameCount's value is 0 inside setup(). It increments by 1 each time the code in draw() finishes executing.
          fill(252, 100, 20);
   polarEllipses(n, r, 10);
   fill(23, 175, 17);

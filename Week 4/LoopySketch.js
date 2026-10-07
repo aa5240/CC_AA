@@ -32,9 +32,9 @@ function draw() {
   }
 }
 ////////////////////////////////////////
-
-function mousePressed() {   
-  r = random(30,400);
+// Regenerate button and Export SVG
+// Generate a new random seed and redraw the sketch
+  r = random(30,200);
   console.log(r);
   // insert your drawing here
   strokeWeight(1); 
@@ -52,8 +52,7 @@ polarTriangles(s, r, 10 );
       ellipse(startingX + (i * space), startingY + j * space, s);
       //console.log(j);
     }}
-}
-
+// Set the SVG to be exported when the "S" button is pressed
 
 function keyPressed() {
   if (key == "s") {

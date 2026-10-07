@@ -8614,7 +8614,7 @@ var p5 = (function () {
   	deltaEHCT,
   };
 
-  /** @typedef {keyof typeof import("./index.js").default extends `deltaE${infer Method}` ? Method : string} Methods */
+  /** @typedef {keyof typeof import("./src/index.js").default extends `deltaE${infer Method}` ? Method : string} Methods */
 
   /** @import { ColorTypes, PlainColorObject } from "./types.js" */
 
