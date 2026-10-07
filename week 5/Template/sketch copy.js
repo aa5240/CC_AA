@@ -57,37 +57,36 @@ function draw() {
   let hourAngle = map(hour(), 0, 12, 0, 360);
 
   stroke(255);
-
+ shader(myShader);
   // Second hand
-  noStroke();
+  
   push();
   rotate(secondAngle);
   line(0, 0, 0, -secondsRadius);
   pop();
 
   // Minute hand
-  noStroke();
+  
   push();
   rotate(minuteAngle);
   line(0, 0, 0, -minutesRadius);
   pop();
 
   // Hour hand
-noStroke();
+  
   push();
   rotate(hourAngle);
   line(0, 0, 0, -hoursRadius);
   pop();
 
   // Tick markers around perimeter of clock
-noStroke();
+
   push();
   for (let ticks = 0; ticks < 60; ticks += 1) {
     point(0, -secondsRadius);
     rotate(6);
   }
   pop();
-    shader(myShader);
 
 
 }
