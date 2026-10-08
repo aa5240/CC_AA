@@ -6,9 +6,10 @@ let hoursRadius;
 let clockDiameter;
 
 function setup() {
-  createCanvas(710, 400, WEBGL);
+  createCanvas(710, 700, WEBGL);
   stroke(255);
   angleMode(DEGREES);
+  
   myShader = buildColorShader(shaderCallback);
 
   // Set radius for each shape based on canvas dimensions
@@ -128,5 +129,5 @@ function draw() {
     rotate(r);
   }
   pop();
-
+ 
 };
