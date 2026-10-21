@@ -4,12 +4,51 @@ let secondsRadius;
 let minutesRadius;
 let hoursRadius;
 let clockDiameter;
-let isGlossy = false;
+let xScale = 0.015;
+let yScale = 0.02;
+
+let gapSlider;
+let gap;
+let offsetSlider;
+let offset;
+  let words = ['January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December', "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+  '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'];
+let wordCount = 50;
+let hue;
+let position;
+
 
 function setup() {
   createCanvas(710, 700, WEBGL);
   stroke(255);
   angleMode(DEGREES);
+    describe(
+    'A random series of words related to p5.js scattered onto the canvas.'
+  );
+ textFont('Space Mono');
+   // Set the text alignment to center and set the color mode to HSB.
+  textAlign(CENTER);
+
+   // Draw as many words as set with the words variable in the
+  // canvas in random positions.
+  for (let i = 0; i < 20; i++) 
+    textSize(random(16, 48));
+    text(random(words), random(width), random(height));
+
+  // Define the random starting point for selecting the words in the
+  // array.
+  position = floor(random(0, words.length - wordCount));
+
+   // Set up the sliders
+  gapSlider = createSlider(2, width / 10, width / 20);
+  gapSlider.changed(dotGrid);
+  gapSlider.mouseMoved(checkChanged);
+  offsetSlider = createSlider(0, 1000, 0);
+  offsetSlider.mouseMoved(checkChanged);
+
+  // Draw the grid
+  dotGrid();
   
   myShader = buildColorShader(shaderCallback);
 
@@ -54,14 +93,37 @@ function setPositionAndColor() {
   circleColor = color(random(100, 256), random(100, 256), random(100, 256));
 }
 
+function checkChanged() {
+  if (gap !== gapSlider.value()) {
+    dotGrid();
+  }
+  if (offset !== offsetSlider.value()) {
+    dotGrid();
+  }
+} 
+function dotGrid() {
+  noStroke();
+  fill(0);
+ // Get the current gap and offset values from the sliders
+  gap = gapSlider.value();
+  offset = offsetSlider.value();
+
+  // Loop through x and y coordinates, at increments set by gap
+  for (let x = gap / 2; x < width; x += gap) {
+    for (let y = gap / 2; y < height; y += gap) {
+      // Calculate noise value using scaled and offset coordinates
+      let noiseValue = noise((x + offset) * xScale, (y + offset) * yScale);
+
+      // Since noiseValue will be 0-1, multiply it by gap to set diameter to
+      // between 0 and the size of the gap between circles
+      let diameter = noiseValue * gap;
+      circle(x, y, diameter);
+    }
+  }
+}
+
 function draw() {
   // The background goes from white to red to green to blue fill
-  background(paletteLerp([
-    ['white', 0],
-    ['red', 0.05],
-    ['green', 0.25],
-    ['blue', 0.5]
-  ], millis() / 10000 % 50));
    // Setting some movements through the amplitude and offset of the clock hands, I used the frameCount variable to create a dynamic effect that changes over time. The amplitude and offset values are calculated based on the width of the canvas, allowing for a responsive design that adapts to different screen sizes.
   let amplitude = width / 2;
   let xOffset = width / 4;
@@ -73,11 +135,6 @@ function draw() {
   orbitControl();
     pointLight(255, 255, 255, 30, -40, 30);
 
-  // Add a glossy coat if the user has double-clicked.
-  if (isGlossy === true) {
-    specularMaterial(255);
-    shininess(50);
-  }
   // Rotate the coordinate system a little more each frame.
   let angle = frameCount * 0.01;
   let ca = cos(angle);
@@ -96,24 +153,21 @@ function draw() {
   let minuteAngle = map(minute(), 0, 60, 0, 360);
   let hourAngle = map(hour(), 0, 12, 0, 360);
 
-  stroke(55);
+  stroke(255);
  shader(myShader);
   // Second hand
-  
   push();
   rotate(secondAngle);
   ellipse(0, y, x, -secondsRadius);
   pop();
 
   // Minute hand
-  
   push();
   rotate(minuteAngle);
   ellipse(0, y, x, -minutesRadius);
   pop();
 
   // Hour hand
-  
   push();
   rotate(hourAngle);
   ellipse(0, y, x, -hoursRadius);
@@ -142,9 +196,8 @@ function draw() {
   for (let ticks = r; ticks < 600; ticks += 1) {
     point(r, secondsRadius);
     rotate(r);
+    
   }
   pop();
- function doubleClicked() {
-  isGlossy = true;
-}
+ 
 };
