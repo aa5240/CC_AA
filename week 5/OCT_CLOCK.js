@@ -4,6 +4,7 @@ let secondsRadius;
 let minutesRadius;
 let hoursRadius;
 let clockDiameter;
+let isGlossy = false;
 
 function setup() {
   createCanvas(710, 700, WEBGL);
@@ -59,8 +60,8 @@ function draw() {
     ['white', 0],
     ['red', 0.05],
     ['green', 0.25],
-    ['blue', 1]
-  ], millis() / 10000 % 10));
+    ['blue', 0.5]
+  ], millis() / 10000 % 50));
    // Setting some movements through the amplitude and offset of the clock hands, I used the frameCount variable to create a dynamic effect that changes over time. The amplitude and offset values are calculated based on the width of the canvas, allowing for a responsive design that adapts to different screen sizes.
   let amplitude = width / 2;
   let xOffset = width / 4;
@@ -68,6 +69,22 @@ function draw() {
   let x = frameCount % amplitude;
   let y = height / 2;
 
+    // Enable orbiting with the mouse. to conrol the camera view, I used the orbitControl() function from p5.js, which allows users to click and drag to rotate the view of the clock. This adds an interactive element to the sketch, making it more engaging for users.
+  orbitControl();
+    pointLight(255, 255, 255, 30, -40, 30);
+
+  // Add a glossy coat if the user has double-clicked.
+  if (isGlossy === true) {
+    specularMaterial(255);
+    shininess(50);
+  }
+  // Rotate the coordinate system a little more each frame.
+  let angle = frameCount * 0.01;
+  let ca = cos(angle);
+  let sa = sin(angle);
+  applyMatrix(ca, 0, sa, 0, 0, 1, 0, 0, -sa, 0, ca, 0, 0, 0, 0, 1);
+
+// to set random logs for shade transition and setting stroke thickness for the clockhands
     r = random(0,360);
   console.log(r);
   // Move origin to center of canvas
@@ -79,7 +96,7 @@ function draw() {
   let minuteAngle = map(minute(), 0, 60, 0, 360);
   let hourAngle = map(hour(), 0, 12, 0, 360);
 
-  stroke(255);
+  stroke(55);
  shader(myShader);
   // Second hand
   
@@ -102,21 +119,19 @@ function draw() {
   ellipse(0, y, x, -hoursRadius);
   pop();
 
-     // Second hand (line)
+  // Second hand (line)
   push();
   rotate(secondAngle);
   line(0, y, 0, -secondsRadius);
   pop();
 
   // Minute hand (line)
-  
   push();
   rotate(minuteAngle);
   line(0, y, 0, -minutesRadius);
   pop();
 
   // Hour hand (line)
-  
   push();
   rotate(hourAngle);
   line(0, y, 0, -hoursRadius);
@@ -129,5 +144,7 @@ function draw() {
     rotate(r);
   }
   pop();
- 
+ function doubleClicked() {
+  isGlossy = true;
+}
 };
