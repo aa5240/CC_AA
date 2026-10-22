@@ -1,50 +1,6 @@
 let pMapper;
 let quad0, quad1; // two
 
-function setup() {
-    createCanvas(windowWidth, windowHeight, WEBGL);
-
-    // create mapper object
-    pMapper = createProjectionMapper(this);
-
-    quad0 = pMapper.createQuadMap(200,200); // width height
-    quad1 = pMapper.createQuadMap(100,200); 
-
-    // loads calibration in the "maps" directory
-    //pMapper.load("maps/map.json");
-}
-
-function draw() {
-    background(0);
-
-    quad0.display("red");
-    quad1.display("magenta");
-    //quad0.displaySketch(yourNameTexture);
-}
-
-function keyPressed() {
-    switch (key) {
-        case "c":
-            pMapper.toggleCalibration();
-            break;
-        case "f":
-            let fs = fullscreen();
-            fullscreen(!fs);
-            break;
-        case "l":
-            pMapper.load("maps/map.json");
-            break;
-
-        case "s":
-            pMapper.save("map.json");
-            break;
-    }
-}
-
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-}
-
 // Declare variables for shape radii  
 // Octotber 4th, 2026 Clock sketch, For this sketch, I used the p5.js library to create a clock with animated hands and a dynamic background. The clock hands are represented by ellipses that rotate based on the current time, and the background color transitions through a gradient over time. The code also includes a shader for color blending and randomization for additional visual effects.
 let secondsRadius;
@@ -63,11 +19,16 @@ let offset;
   '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'];
 let wordCount = 50;
 let position;
-
-
 function setup() {
-  createCanvas(710, 700, WEBGL);
-  stroke(255);
+    createCanvas(windowWidth, windowHeight, WEBGL);
+
+    // create mapper object
+    pMapper = createProjectionMapper(this);
+
+    quad0 = pMapper.createQuadMap(720,710); // width height
+    quad1 = pMapper.createQuadMap(710,720); 
+
+    stroke(255);
   angleMode(DEGREES);
     describe(
     'A random series of words related to p5.js scattered onto the canvas.'
@@ -167,8 +128,42 @@ function dotGrid() {
     }
   }
 }
+    // loads calibration in the "maps" directory
+
+    //pMapper.load("maps/map.json");
 
 function draw() {
+    background(0);
+
+    quad0.display("red");
+    quad1.display("magenta");
+    quad0.displaySketch(textureAhmad);
+}
+
+function keyPressed() {
+    switch (key) {
+        case "c":
+            pMapper.toggleCalibration();
+            break;
+        case "f":
+            let fs = fullscreen();
+            fullscreen(!fs);
+            break;
+        case "l":
+            pMapper.load("maps/map.json");
+            break;
+
+        case "s":
+            pMapper.save("map.json");
+            break;
+    }
+}
+
+function windowResized() {
+}
+
+
+function textureAhmad(pg) {
   // The background goes from white to red to green to blue fill
    // Setting some movements through the amplitude and offset of the clock hands, I used the frameCount variable to create a dynamic effect that changes over time. The amplitude and offset values are calculated based on the width of the canvas, allowing for a responsive design that adapts to different screen sizes.
   let amplitude = width / 2;
@@ -199,52 +194,52 @@ function draw() {
   let minuteAngle = map(minute(), 0, 60, 0, 360);
   let hourAngle = map(hour(), 0, 12, 0, 360);
 
-  stroke(255);
+
+  pg.stroke(255);
  shader(myShader);
   // Second hand
   push();
-  rotate(secondAngle);
+  pg.rotate(secondAngle);
   ellipse(0, y, x, -secondsRadius);
   pop();
 
   // Minute hand
   push();
-  rotate(minuteAngle);
-  ellipse(0, y, x, -minutesRadius);
+  pg.rotate(minuteAngle);
+  pg.ellipse(0, y, x, -minutesRadius);
   pop();
 
   // Hour hand
   push();
-  rotate(hourAngle);
-  ellipse(0, y, x, -hoursRadius);
+  pg.rotate(hourAngle);
+  pg.ellipse(0, y, x, -hoursRadius);
   pop();
 
   // Second hand (line)
   push();
-  rotate(secondAngle);
-  line(0, y, 0, -secondsRadius);
+  pg.rotate(secondAngle);
+  pg.line(0, y, 0, -secondsRadius);
   pop();
 
   // Minute hand (line)
   push();
-  rotate(minuteAngle);
-  line(0, y, 0, -minutesRadius);
+  pg.rotate(minuteAngle);
+  pg.line(0, y, 0, -minutesRadius);
   pop();
 
   // Hour hand (line)
   push();
-  rotate(hourAngle);
-  line(0, y, 0, -hoursRadius);
+  pg.rotate(hourAngle);
+  pg.line(0, y, 0, -hoursRadius);
   pop();
 
   // Tick markers around perimeter of clock
   push();
   for (let ticks = r; ticks < 600; ticks += 1) {
-    point(r, secondsRadius);
-    rotate(r);
+    pg.point(r, secondsRadius);
+    pg.rotate(r);
     
   }
   pop();
  
 };
-
