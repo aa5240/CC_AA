@@ -200,7 +200,7 @@ function textureAhmad(pg) {
   // Second hand
   push();
   pg.rotate(secondAngle);
-  ellipse(0, y, x, -secondsRadius);
+  pg.ellipse(0, y, x, -secondsRadius);
   pop();
 
   // Minute hand
