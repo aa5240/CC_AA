@@ -6,7 +6,10 @@ Original animations:
 Texture 1 - https://editor.p5js.org/melodyloveless/sketches/9Vbf_peML
 Texture 2 - https://editor.p5js.org/melodyloveless/sketches/vP7c8h76t
 */
-
+let secondsRadius;
+let minutesRadius;
+let hoursRadius;
+let clockDiameter;
 let pMapper;
 let quad0, quad1; // two surfaces
 
@@ -72,50 +75,85 @@ function windowResized() {
 /* First Texture/Sketch */
 
 function melodySetup1() {
- for (i = 0; i < numCircles; i++) {
-      x[i] = random(400);
-      y[i] = random(400);
-      ySpeed[i] = random(1,8);
-      
-      // for color
-      // random number generator
-      let r = random(1); 
-      if (r < 0.33) {
-        c[i] = [0,0,255]; // blue
-      } else if (r > 0.66) {
-        c[i] = [0,255,0]; // green
-      } else {
-        c[i] = [255,0,0]; // red
-      }
-      
+ angleMode(DEGREES);
+   let radius = min(width, height) / 2;
+  secondsRadius = radius * 0.71;
+  minutesRadius = radius * 0.6;
+  hoursRadius = radius * 0.5;
+  clockDiameter = radius * 1.7;
     }
-}
 
 // make sure to include a pg.push() at the top of your original animation and pg.pop() at the bottom of the animation
 // having multiple pg.push() and pg.pop() in one texture is okay (and sometimes necessary!)
 function melodyTexture1(pg) {
-    pg.clear();
-    pg.push(); 
+
+    let amplitude = width / 2;
+  let xOffset = width / 4;
+
+  let x = frameCount % amplitude;
+  let y = height / 2;
+
+  let secondAngle = map(second(), 0, 60, 0, 360);
+  let minuteAngle = map(minute(), 0, 60, 0, 360);
+  let hourAngle = map(hour(), 0, 12, 0, 360);
+
+  pg.clear();
+  pg.push(); 
 
     pg.background([255,255,255]);
     pg.noStroke();
-    pg.blendMode(EXCLUSION); 
 
   for (i = 0; i < second(); i++) {
     // for size
     let s = map(second(), 0, 59, 180, 20); 
-        
+         // Rotate the coordinate system a little more each frame.
+  let angle = frameCount * 0.01;
+  let ca = cos(angle);
+  let sa = sin(angle);
+  pg.applyMatrix(ca, 0, sa, 0, 0, 1, 0, 0, -sa, 0, ca, 0, 0, 0, 0, 1);
     // random colors
     pg.fill(c[i]);
-    
-    // add ySpeed to y
-    y[i] = y[i] + ySpeed[i];
-    
-    pg.ellipse(x[i], y[i], s);
     
     // switch directions when shape is at edge
     if (y[i] >= 400 || y[i] <= 0) {
       ySpeed[i] = ySpeed[i] * -1;
+
+stroke(255);
+  pg.push();
+  rotate(secondAngle);
+  pg.ellipse(0, 10, 1, -secondsRadius);
+  pg.pop();
+
+  // Minute hand
+  pg.push();
+  rotate(minuteAngle);
+  pg.ellipse(0, 10, 1, -minutesRadius);
+  pg.pop();
+
+  // Hour hand
+  pg.push();
+  rotate(hourAngle);
+  pg.ellipse(0, 10, 1, -hoursRadius);
+  pg.pop();
+
+  // Second hand (line)
+  pg.push();
+  rotate(secondAngle);
+  pg.line(0, 10, 0, -secondsRadius);
+  pg.pop();
+
+  // Minute hand (line)
+  pg.push();
+  rotate(minuteAngle);
+  pg.line(0, 10, 0, -minutesRadius);
+  pg.pop();
+
+  // Hour hand (line)
+  pg.push();
+  rotate(hourAngle);
+  pg.line(0, 10, 0, -hoursRadius);
+  pg.pop();
+    
     } 
   }
 
