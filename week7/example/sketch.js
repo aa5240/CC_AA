@@ -4,7 +4,7 @@ let quad0;
 let secondsRadius, minutesRadius, hoursRadius, clockDiameter;
 let xScale = 0.015;
 let yScale = 0.02;
-
+let isClockActive = true;
 let gapSlider, offsetSlider;
 let myShader;
 
@@ -35,6 +35,12 @@ function draw() {
   background(0);
   quad0.displaySketch(ahmadTexture);
 }
+// Toggle a state variable on click
+// toggle the clock display on mouse press with the Help of the isClockActive variable. When the mouse is pressed, the value of isClockActive is toggled between true and false, which can be used to control whether the clock is displayed or not in the draw function. I aked the LLM for week 8.
+function mousePressed() {
+  // Click anywhere to toggle the clock display on/off
+  isClockActive = !isClockActive;
+}
 
 function ahmadSetup() {
   angleMode(DEGREES); // Set angle mode to degrees for clock math
@@ -61,6 +67,7 @@ function ahmadTexture(pg) {
   pg.push(); // Start main buffer state
   pg.angleMode(DEGREES);
 
+  // 1. Clear background first
   pg.background(0);
 
   // --- Layer 1: Perlin Noise Dot Grid Background ---
@@ -79,63 +86,66 @@ function ahmadTexture(pg) {
   }
   pg.pop();
 
-  // --- Layer 2: Clock Hands & Face ---
-  let secondAngle = map(second(), 0, 60, 0, 360);
-  let minuteAngle = map(minute(), 0, 60, 0, 360);
-  let hourAngle = map(hour() % 12, 0, 12, 0, 360);
+  // --- Layer 2: Clock Hands & Face (Toggled by Click) ---
+  if (isClockActive) {
+    let secondAngle = map(second(), 0, 60, 0, 360);
+    let minuteAngle = map(minute(), 0, 60, 0, 360);
+    let hourAngle = map(hour() % 12, 0, 12, 0, 360);
 
-  let sRad = pg.width * 0.35;
-  let mRad = pg.width * 0.25;
-  let hRad = pg.width * 0.15;
+    let sRad = pg.width * 0.35;
+    let mRad = pg.width * 0.25;
+    let hRad = pg.width * 0.15;
 
-  pg.push();
-  pg.translate(pg.width / 2, pg.height / 2); // Center origin
+    pg.push();
+    pg.translate(pg.width / 2, pg.height / 2); // Center origin
 
-  // 1. Clock Face Circle (Masks noise grid behind hands)
-  pg.fill(20); 
-  pg.stroke(255, 255, 0);
-  pg.strokeWeight(3);
-  pg.circle(0, 0, sRad * 2 + 20);
+    // Clock Face Circle
+    pg.fill(20); 
+    pg.stroke(255, 255, 0);
+    pg.strokeWeight(3);
+    pg.circle(0, 0, sRad * 2 + 20);
 
-  // 2. Hour Hand (Bright white stroke)
-  pg.push();
-  pg.rotate(hourAngle);
-  pg.stroke(255);
-  pg.strokeWeight(6);
-  pg.line(0, 0, 0, -hRad);
-  pg.pop();
+    // Hour Hand
+    pg.push();
+    pg.rotate(hourAngle);
+    pg.stroke(255);
+    pg.strokeWeight(6);
+    pg.line(0, 0, 0, -hRad);
+    pg.pop();
 
-  // 3. Minute Hand (Bright cyan stroke)
-  pg.push();
-  pg.rotate(minuteAngle);
-  pg.stroke(0, 255, 255);
-  pg.strokeWeight(4);
-  pg.line(0, 0, 0, -mRad);
-  pg.pop();
+    // Minute Hand
+    pg.push();
+    pg.rotate(minuteAngle);
+    pg.stroke(0, 255, 255);
+    pg.strokeWeight(4);
+    pg.line(0, 0, 0, -mRad);
+    pg.pop();
 
-  // 4. Second Hand (Red stroke)
-  pg.push();
-  pg.rotate(secondAngle);
-  pg.stroke(255, 0, 0);
-  pg.strokeWeight(2);
-  pg.line(0, 0, 0, -sRad);
-  pg.pop();
+    // Second Hand
+    pg.push();
+    pg.rotate(secondAngle);
+    pg.stroke(255, 0, 0);
+    pg.strokeWeight(2);
+    pg.line(0, 0, 0, -sRad);
+    pg.pop();
 
-  // 5. Perimeter Ticks
-  pg.push();
-  pg.stroke(255);
-  pg.strokeWeight(3);
-  for (let ticks = 0; ticks < 60; ticks++) {
-    pg.point(0, -sRad);
-    pg.rotate(6);
+    // Perimeter Ticks
+    pg.push();
+    pg.stroke(255);
+    pg.strokeWeight(3);
+    for (let ticks = 0; ticks < 60; ticks++) {
+      pg.point(0, -sRad);
+      pg.rotate(6);
+    }
+    pg.pop();
+
+    pg.pop(); // Restore origin back to top-left
   }
-  pg.pop();
 
-  pg.pop(); // Restore origin back to top-left
-
-  // --- Layer 3: Border Frame ---
+  // --- Layer 3: Interactive Border Frame ---
+  let dynamicWeight = map(mouseX, 0, width, 5, 25);
   pg.noFill();
-  pg.strokeWeight(15);
+  pg.strokeWeight(dynamicWeight);
   pg.stroke(255, 255, 0);
   pg.rect(0, 0, pg.width, pg.height);
 
