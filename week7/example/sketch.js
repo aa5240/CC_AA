@@ -1,115 +1,157 @@
-/* Example 
-Original animation: https://editor.p5js.org/melodyloveless/sketches/9Vbf_peML
-Amount of circles and their sizes are proportional to current second()
-*/
 
+// global variables
 let pMapper;
 let quad0;
+let secondsRadius, minutesRadius, hoursRadius, clockDiameter;
+let xScale = 0.015;
+let yScale = 0.02;
 
-// example specific variables
-let x = [];
-let y = [];
-let ySpeed = [];
-const numCircles = 60; // max # of seconds
-let c = []; // for colors
+let gapSlider, offsetSlider;
+let myShader;
 
-function setup() {
-    createCanvas(windowWidth, windowHeight, WEBGL);
+async function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
 
-    // create mapper object
-    pMapper = createProjectionMapper(this);
+  // Initialize Projection Mapper surface
+  pMapper = createProjectionMapper(this);
+  quad0 = pMapper.createQuadMap(710, 700, WEBGL);
 
-    quad0 = pMapper.createQuadMap(400,400); // width+height
-    // to do: create other surfaces
+  ahmadSetup();
+}
 
-    // loads calibration in the "maps" directory
-    //pMapper.load("maps/map.json");
+function shaderCallback() {
+  let t = millis() * 0.001;
+  let sinVal = sin(t);
+  let value = map(sinVal, -1, 1, 0, 1);
 
-    melodySetup();
+  let cyan = [0, 0.5, 1, 1];
+  let orange = [1, 0.5, 0, 1];
+
+  finalColor.begin();
+  finalColor.set(mix(cyan, orange, value));
+  finalColor.end();
 }
 
 function draw() {
-    background(0);
-    quad0.displaySketch(melodyTexture);
+  background(0);
+  quad0.displaySketch(ahmadTexture);
+}
 
+function ahmadSetup() {
+  // Create UI sliders once in setup
+  gapSlider = createSlider(2, width / 10, width / 20);
+  offsetSlider = createSlider(0, 1000, 0);
+
+  // Build shader if using custom WebGL shaders
+  if (typeof buildColorShader !== "undefined") {
+    myShader = buildColorShader(shaderCallback);
+  }
+
+  // Calculate clock hand radii relative to surface dimensions
+  let radius = min(710, 700) / 2;
+  secondsRadius = radius * 0.71;
+  minutesRadius = radius * 0.6;
+  hoursRadius = radius * 0.5;
+  clockDiameter = radius * 1.7;
+}
+
+// Single combined texture function
+function ahmadTexture(pg) {
+  pg.push(); // Start main buffer state
+
+  pg.background(0);
+
+  // --- Layer 1: Perlin Noise Dot Grid Background ---
+  pg.push();
+  let gap = gapSlider.value();
+  let offset = offsetSlider.value();
+
+  pg.noStroke();
+  pg.fill(255);
+  for (let x = gap / 2; x < pg.width; x += gap) {
+    for (let y = gap / 2; y < pg.height; y += gap) {
+      let noiseValue = noise((x + offset) * xScale, (y + offset) * yScale);
+      let diameter = noiseValue * gap;
+      pg.circle(x, y, diameter);
+    }
+  }
+  pg.pop();
+
+  // --- Layer 2: Clock Hands & Perimeter Ticks ---
+  let secondAngle = map(second(), 0, 60, 0, 360);
+  let minuteAngle = map(minute(), 0, 60, 0, 360);
+  let hourAngle = map(hour() % 12, 0, 12, 0, 360);
+
+  let sRad = pg.width * 0.35;
+  let mRad = pg.width * 0.25;
+  let hRad = pg.width * 0.15;
+
+  pg.push();
+  pg.translate(pg.width / 2, pg.height / 2); // Center origin
+
+  // Hour Hand
+  pg.push();
+  pg.rotate(hourAngle);
+  pg.stroke(255);
+  pg.strokeWeight(4);
+  pg.line(0, 0, 0, -hRad);
+  pg.pop();
+
+  // Minute Hand
+  pg.push();
+  pg.rotate(minuteAngle);
+  pg.stroke(255);
+  pg.strokeWeight(2);
+  pg.line(0, 0, 0, -mRad);
+  pg.pop();
+
+  // Second Hand
+  pg.push();
+  pg.rotate(secondAngle);
+  pg.stroke(255, 0, 0);
+  pg.strokeWeight(1);
+  pg.line(0, 0, 0, -sRad);
+  pg.pop();
+
+  // Perimeter Ticks
+  pg.push();
+  pg.stroke(255);
+  pg.strokeWeight(2);
+  for (let ticks = 0; ticks < 60; ticks++) {
+    pg.point(0, -sRad);
+    pg.rotate(6);
+  }
+  pg.pop();
+
+  pg.pop(); // Restore origin back to top-left
+
+  // --- Layer 3: Border Frame ---
+  pg.noFill();
+  pg.strokeWeight(15);
+  pg.stroke(255, 255, 0);
+  pg.rect(0, 0, pg.width, pg.height);
+
+  pg.pop(); // End main buffer state
 }
 
 function keyPressed() {
-    switch (key) {
-        case "c":
-            pMapper.toggleCalibration();
-            break;
-        case "f":
-            let fs = fullscreen();
-            fullscreen(!fs);
-            break;
-        case "l":
-            pMapper.load("maps/map.json");
-            break;
-
-        case "s":
-            pMapper.save("map.json");
-            break;
-    }
+  switch (key) {
+    case "c":
+      pMapper.toggleCalibration();
+      break;
+    case "f":
+      let fs = fullscreen();
+      fullscreen(!fs);
+      break;
+    case "l":
+      pMapper.load("maps/map.json");
+      break;
+    case "s":
+      pMapper.save("map.json");
+      break;
+  }
 }
 
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-}
-
-/* Melody's Animation */
-
-function melodySetup() {
- for (i = 0; i < numCircles; i++) {
-      x[i] = random(400);
-      y[i] = random(400);
-      ySpeed[i] = random(1,8);
-      
-      // for color
-      // random number generator
-      let r = random(1); 
-      if (r < 0.33) {
-        c[i] = [0,0,255]; // blue
-      } else if (r > 0.66) {
-        c[i] = [0,255,0]; // green
-      } else {
-        c[i] = [255,0,0]; // red
-      }
-      
-    }
-}
-
-function melodyTexture(pg) {
-    pg.clear();
-    pg.push();
-
-    pg.background([255,255,255]);
-    pg.noStroke();
-    pg.blendMode(EXCLUSION); 
-
-  for (i = 0; i < second(); i++) {
-    // for size
-    let s = map(second(), 0, 59, 180, 20); 
-        
-    // random colors
-    pg.fill(c[i]);
-    
-    // add ySpeed to y
-    y[i] = y[i] + ySpeed[i];
-    
-    pg.ellipse(x[i], y[i], s);
-    
-    // switch directions when shape is at edge
-    if (y[i] >= 400 || y[i] <= 0) {
-      ySpeed[i] = ySpeed[i] * -1;
-    } 
-  }
-
-  // border for animation
-  pg.noFill();
-  pg.strokeWeight(30);
-  pg.stroke([255,255,0]);
-  pg.rect(0,0, 400);
-  
-  pg.pop();
+  resizeCanvas(windowWidth, windowHeight);
 }
