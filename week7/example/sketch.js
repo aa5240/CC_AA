@@ -16,32 +16,22 @@ let clockDiameter;
 let xScale = 0.015;
 let yScale = 0.02;
 
-  let words = ['January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December', "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
-  '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'];
-let wordCount = 50;
-let position;
-
 
 function setup() {
-    createCanvas(windowWidth, windowHeight, WEBGL);
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  angleMode(DEGREES);
 
     // create mapper object
-    pMapper = createProjectionMapper(this);
+  pMapper = createProjectionMapper(this);
 
-    quad0 = pMapper.createQuadMap(800,800); // width+height
-    // to do: create other surfaces
+  quad0 = pMapper.createQuadMap(720,710); // width height
+  
+
+
+  // Set radius for each shape based on canvas dimensions
 
     // loads calibration in the "maps" directory
     //pMapper.load("maps/map.json");
-
-    melodySetup();
-}
-
-function draw() {
-    background(0);
-    quad0.displaySketch(melodyTexture);
-
 }
 
 function keyPressed() {
@@ -63,27 +53,86 @@ function keyPressed() {
     }
 }
 
+
+
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
 }
 
 /* Melody's Animation */
 
-function melodySetup() {
-  pg.angleMode(DEGREES);
-
+function draw(pg) {
+   
+  // Define the random starting point for selecting the words in the
+  // array.
+  position = floor(random(0, words.length - wordCount));
   myShader = buildColorShader(shaderCallback);
-
-  // Set radius for each shape based on canvas dimensions
-  let radius = min(width, height) / 2;
+  // to set random logs for shade transition and setting stroke thickness for the clockhands
+    r = random(0,360);
+  console.log(r);
+  // Move origin to center of canvas
+  // Draw the clock background
+  noStroke();
+  
+  let secondAngle = map(second(), 0, 60, 0, 360);
+  let minuteAngle = map(minute(), 0, 60, 0, 360);
+  let hourAngle = map(hour(), 0, 12, 0, 360);
+   let radius = min(width, height) / 2;
   secondsRadius = radius * 0.71;
   minutesRadius = radius * 0.6;
   hoursRadius = radius * 0.5;
   clockDiameter = radius * 1.7;
 // Based off of the clock example from https://p5js.org/examples/form-clock.html
+    background(0);
+   stroke(255);
+ shader(myShader);
+  stroke(255);
+  // Second hand
+  push();
+  rotate(secondAngle);
+  ellipse(0, 1, 6, -secondsRadius);
+  pop();
 
+  // Minute hand
+  push();
+  rotate(minuteAngle);
+  ellipse(0, 5, 8, -minutesRadius);
+  pop();
+
+  // Hour hand
+  push();
+  rotate(hourAngle);
+  ellipse(0, 5, 1, -hoursRadius);
+  pop();
+
+  // Second hand (line)
+  push();
+  rotate(secondAngle);
+  line(0, 10, 0, -secondsRadius);
+  pop();
+
+  // Minute hand (line)
+  push();
+  rotate(minuteAngle);
+  line(0, 20, 0, -minutesRadius);
+  pop();
+
+  // Hour hand (line)
+  push();
+  rotate(hourAngle);
+  line(0,25, 0, -hoursRadius);
+  pop();
+
+  // Tick markers around perimeter of clock
+  push();
+  for (let ticks = r; ticks < 600; ticks += 1) 
+    point(r, secondsRadius);
+    rotate(r);
+  pop();
+ 
 
 }
+
 
 function shaderCallback() {
   // shaderCallback runs on the GPU. millis() gives ms since start; multiply by 0.001 for seconds.
@@ -116,24 +165,7 @@ function setPositionAndColor() {
   circleColor = color(random(100, 256), random(100, 256), random(100, 256));
 }
 
-function melodyTexture(pg) {
-
-   describe(
-    'A random series of words related to p5.js scattered onto the canvas.'
-  );
- textFont('Space Mono');
-   // Set the text alignment to center and set the color mode to HSB.
-  textAlign(CENTER);
-
-   // Draw as many words as set with the words variable in the
-  // canvas in random positions.
-  for (let i = 0; i < 20; i++) 
-    textSize(random(16, 48));
-    text(random(words), random(width), random(height));
-
-  // Define the random starting point for selecting the words in the
-  // array.
-  position = floor(random(0, words.length - wordCount));
+function draw01(pg) {
   
     // The background goes from white to red to green to blue fill
    // Setting some movements through the amplitude and offset of the clock hands, I used the frameCount variable to create a dynamic effect that changes over time. The amplitude and offset values are calculated based on the width of the canvas, allowing for a responsive design that adapts to different screen sizes.
@@ -156,57 +188,10 @@ function melodyTexture(pg) {
   console.log(r);
   // Move origin to center of canvas
   // Draw the clock background
-  pg.noStroke();
-  
   // Calculate angle for each hand
   let secondAngle = map(second(), 0, 60, 0, 360);
   let minuteAngle = map(minute(), 0, 60, 0, 360);
   let hourAngle = map(hour(), 0, 12, 0, 360);
 
-  pg.stroke(255);
- pg.shader(myShader);
-  pg.stroke(255);
-  // Second hand
-  push();
-  pg.rotate(secondAngle);
-  pg.ellipse(0, y, x, -secondsRadius);
-  pg.pop();
-
-  // Minute hand
-  push();
-  pg.rotate(minuteAngle);
-  pg.ellipse(0, y, x, -minutesRadius);
-  pg.pop();
-
-  // Hour hand
-  push();
-  pg.rotate(hourAngle);
-  pg.ellipse(0, y, x, -hoursRadius);
-  pg.pop();
-
-  // Second hand (line)
-  push();
-  pg.rotate(secondAngle);
-  pg.line(0, y, 0, -secondsRadius);
-  pg.pop();
-
-  // Minute hand (line)
-  push();
-  pg.rotate(minuteAngle);
-  pg.line(0, y, 0, -minutesRadius);
-  pg.pop();
-
-  // Hour hand (line)
-  push();
-  pg.rotate(hourAngle);
-  pg.line(0, y, 0, -hoursRadius);
-  pg.pop();
-
-  // Tick markers around perimeter of clock
-  push();
-  for (let ticks = r; ticks < 600; ticks += 1) 
-    pg.point(r, secondsRadius);
-    pg.rotate(r);
-  pg.pop();
  
 }

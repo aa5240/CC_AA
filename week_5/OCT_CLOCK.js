@@ -11,12 +11,12 @@ let gapSlider;
 let gap;
 let offsetSlider;
 let offset;
-  let words = ['January', 'February', 'March', 'April', 'May', 'June',
+let words = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December', "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
   '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'];
 let wordCount = 50;
 let position;
-
+let hue;
 
 function setup() {
   createCanvas(710, 700, WEBGL);
@@ -28,9 +28,13 @@ function setup() {
  textFont('Space Mono');
    // Set the text alignment to center and set the color mode to HSB.
   textAlign(CENTER);
-
+  colorMode(HSB);
    // Draw as many words as set with the words variable in the
   // canvas in random positions.
+    hue = random(180, 360);
+     position = floor(random(0, words.length - wordCount));
+
+  background(hue, 95, 25);
   for (let i = 0; i < 20; i++) 
     textSize(random(16, 48));
     text(random(words), random(width), random(height));
