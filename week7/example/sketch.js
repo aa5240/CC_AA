@@ -1,5 +1,4 @@
-
-// global variables
+// Global variables
 let pMapper;
 let quad0;
 let secondsRadius, minutesRadius, hoursRadius, clockDiameter;
@@ -14,7 +13,7 @@ async function setup() {
 
   // Initialize Projection Mapper surface
   pMapper = createProjectionMapper(this);
-  quad0 = pMapper.createQuadMap(710, 700, WEBGL);
+  quad0 = pMapper.createQuadMap(windowWidth, windowHeight);
 
   ahmadSetup();
 }
@@ -38,16 +37,18 @@ function draw() {
 }
 
 function ahmadSetup() {
+  angleMode(DEGREES); // Set angle mode to degrees for clock math
+
   // Create UI sliders once in setup
   gapSlider = createSlider(2, width / 10, width / 20);
   offsetSlider = createSlider(0, 1000, 0);
 
-  // Build shader if using custom WebGL shaders
+  // Build shader if custom WebGL shader helper is available
   if (typeof buildColorShader !== "undefined") {
     myShader = buildColorShader(shaderCallback);
   }
 
-  // Calculate clock hand radii relative to surface dimensions
+  // Calculate clock hand radii
   let radius = min(710, 700) / 2;
   secondsRadius = radius * 0.71;
   minutesRadius = radius * 0.6;
@@ -58,6 +59,7 @@ function ahmadSetup() {
 // Single combined texture function
 function ahmadTexture(pg) {
   pg.push(); // Start main buffer state
+  pg.angleMode(DEGREES);
 
   pg.background(0);
 
@@ -77,7 +79,7 @@ function ahmadTexture(pg) {
   }
   pg.pop();
 
-  // --- Layer 2: Clock Hands & Perimeter Ticks ---
+  // --- Layer 2: Clock Hands & Face ---
   let secondAngle = map(second(), 0, 60, 0, 360);
   let minuteAngle = map(minute(), 0, 60, 0, 360);
   let hourAngle = map(hour() % 12, 0, 12, 0, 360);
@@ -89,34 +91,40 @@ function ahmadTexture(pg) {
   pg.push();
   pg.translate(pg.width / 2, pg.height / 2); // Center origin
 
-  // Hour Hand
+  // 1. Clock Face Circle (Masks noise grid behind hands)
+  pg.fill(20); 
+  pg.stroke(255, 255, 0);
+  pg.strokeWeight(3);
+  pg.circle(0, 0, sRad * 2 + 20);
+
+  // 2. Hour Hand (Bright white stroke)
   pg.push();
   pg.rotate(hourAngle);
   pg.stroke(255);
-  pg.strokeWeight(4);
+  pg.strokeWeight(6);
   pg.line(0, 0, 0, -hRad);
   pg.pop();
 
-  // Minute Hand
+  // 3. Minute Hand (Bright cyan stroke)
   pg.push();
   pg.rotate(minuteAngle);
-  pg.stroke(255);
-  pg.strokeWeight(2);
+  pg.stroke(0, 255, 255);
+  pg.strokeWeight(4);
   pg.line(0, 0, 0, -mRad);
   pg.pop();
 
-  // Second Hand
+  // 4. Second Hand (Red stroke)
   pg.push();
   pg.rotate(secondAngle);
   pg.stroke(255, 0, 0);
-  pg.strokeWeight(1);
+  pg.strokeWeight(2);
   pg.line(0, 0, 0, -sRad);
   pg.pop();
 
-  // Perimeter Ticks
+  // 5. Perimeter Ticks
   pg.push();
   pg.stroke(255);
-  pg.strokeWeight(2);
+  pg.strokeWeight(3);
   for (let ticks = 0; ticks < 60; ticks++) {
     pg.point(0, -sRad);
     pg.rotate(6);
