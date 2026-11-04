@@ -6,10 +6,6 @@ Original animations:
 Texture 1 - https://editor.p5js.org/melodyloveless/sketches/9Vbf_peML
 Texture 2 - https://editor.p5js.org/melodyloveless/sketches/vP7c8h76t
 */
-let secondsRadius;
-let minutesRadius;
-let hoursRadius;
-let clockDiameter;
 let pMapper;
 let quad0, quad1; // two surfaces
 
@@ -26,13 +22,13 @@ let myAnimation;
 const b = ["#F44336", "#8BC34A", "#03A9F4"];
 const f = ["#FF9800", "#FF0C94", "#F7FF96"];
 
-function setup() {
+async function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
 
     // create mapper object
     pMapper = createProjectionMapper(this);
 
-    quad0 = pMapper.createQuadMap(400,400); // width+height
+    quad0 = pMapper.createQuadMap(730,730); // width+height
     quad1 = pMapper.createQuadMap(200,200); // width+height
 
     // loads calibration in the "maps" directory
@@ -74,100 +70,68 @@ function windowResized() {
 
 /* First Texture/Sketch */
 
-function melodySetup1() {
- angleMode(DEGREES);
-   let radius = min(width, height) / 2;
-  secondsRadius = radius * 0.71;
-  minutesRadius = radius * 0.6;
-  hoursRadius = radius * 0.5;
-  clockDiameter = radius * 1.7;
-    }
+//function melodySetup1() {
 
 // make sure to include a pg.push() at the top of your original animation and pg.pop() at the bottom of the animation
 // having multiple pg.push() and pg.pop() in one texture is okay (and sometimes necessary!)
+/* 1. Setup - runs ONCE at startup */
+function melodySetup1() {
+  // Set hand sizes relative to the graphics buffer
+  // Fill color array ONCE so it doesn't grow infinitely in draw
+  c = [];
+  for (let i = 0; i < numCircles; i++) {
+    c.push(color(random(255), random(255), random(255)));
+  }
+}
+
+/* 2. Texture - runs every frame */
 function melodyTexture1(pg) {
-
-    let amplitude = width / 2;
-  let xOffset = width / 4;
-
-  let x = frameCount % amplitude;
-  let y = height / 2;
-
-  let secondAngle = map(second(), 0, 60, 0, 360);
-  let minuteAngle = map(minute(), 0, 60, 0, 360);
-  let hourAngle = map(hour(), 0, 12, 0, 360);
 
   pg.clear();
   pg.push(); 
 
-    pg.background([255,255,255]);
-    pg.noStroke();
+  pg.background(255);
+  pg.noStroke();
 
-  for (i = 0; i < second(); i++) {
-    // for size
-    let s = map(second(), 0, 59, 180, 20); 
-         // Rotate the coordinate system a little more each frame.
-  let angle = frameCount * 0.01;
-  let ca = cos(angle);
-  let sa = sin(angle);
-  pg.applyMatrix(ca, 0, sa, 0, 0, 1, 0, 0, -sa, 0, ca, 0, 0, 0, 0, 1);
-    // random colors
-    pg.fill(c[i]);
-    
-    // switch directions when shape is at edge
-    if (y[i] >= 400 || y[i] <= 0) {
-      ySpeed[i] = ySpeed[i] * -1;
+  // 1. Draw grid of background circles based on seconds
+  let cols = 10;
+  let spacing = pg.width / cols;
 
-stroke(255);
-  pg.push();
-  rotate(secondAngle);
-  pg.ellipse(0, 10, 1, -secondsRadius);
-  pg.pop();
+   // 1. Seconds Loop
+  for (let s = 0; s < second(); s++) {
+    let col = s % cols;
+    let row = floor(s / cols);
+    let xPos = col * spacing + spacing / 2;
+    let yPos = row * spacing + spacing / 2;
 
-  // Minute hand
-  pg.push();
-  rotate(minuteAngle);
-  pg.ellipse(0, 10, 1, -minutesRadius);
-  pg.pop();
-
-  // Hour hand
-  pg.push();
-  rotate(hourAngle);
-  pg.ellipse(0, 10, 1, -hoursRadius);
-  pg.pop();
-
-  // Second hand (line)
-  pg.push();
-  rotate(secondAngle);
-  pg.line(0, 10, 0, -secondsRadius);
-  pg.pop();
-
-  // Minute hand (line)
-  pg.push();
-  rotate(minuteAngle);
-  pg.line(0, 10, 0, -minutesRadius);
-  pg.pop();
-
-  // Hour hand (line)
-  pg.push();
-  rotate(hourAngle);
-  pg.line(0, 10, 0, -hoursRadius);
-  pg.pop();
-    
-    } 
+    pg.fill(c[s]);
+    pg.circle(xPos, yPos, 30);
   }
 
-  // border for animation
+  // 2. Minutes Loop
+  for (let m = 0; m < minute(); m++) {
+    let xPos = (m * 20) % pg.width;
+    let yPos = 40;
+    pg.fill(0, 200, 255);
+    pg.rect(xPos, yPos, 15, 15);
+  }
+
+  // 3. Hours Loop
+  for (let h = 0; h < hour() % 12; h++) {
+    let xPos = (h * 30) % pg.width;
+    let yPos = 80;
+    pg.fill(255, 100, 0);
+    pg.square(xPos, yPos, 20);
+  }
+
+  // 3. Border box around buffer edge
   pg.noFill();
-  pg.strokeWeight(30);
-  pg.stroke([255,255,0]);
-  pg.rect(0,0, 400);
-  
+  pg.strokeWeight(15);
+  pg.stroke(255, 255, 0);
+  pg.rect(0, 0, pg.width, pg.height);
+
   pg.pop();
 }
-
-/* Second Texture/Sketch */
-
 function melodySetup2() {
   const duration = 1000; // 1 second
   myAnimation = setInterval(fillColors, duration);
