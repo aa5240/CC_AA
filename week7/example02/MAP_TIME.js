@@ -21,8 +21,6 @@ let pos = 0;
 let myAnimation;
 const b = ["#F44336", "#8BC34A", "#03A9F4"];
 const f = ["#FF9800", "#FF0C94", "#F7FF96"];
-let lastSecond = -1;         
-let secondStart = 0; 
 
 
 // LLM recommended switching to async function setup() to avoid errors with pMapper
@@ -49,31 +47,10 @@ function draw() {
 
 }
 
-function keyPressed() {
-    switch (key) {
-        case "c":
-            pMapper.toggleCalibration();
-            break;
-        case "f":
-            let fs = fullscreen();
-            fullscreen(!fs);
-            break;
-        case "l":
-            pMapper.load("maps/map.json");
-            break;
-
-        case "s":
-            pMapper.save("map.json");
-            break;
-    }
-}
-
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
 }
-
 /* First Texture/Sketch */
-
 // Helper function to pick new words and positions
 function updateWords() {
   activeWords = [];
@@ -187,7 +164,6 @@ function ahmadTexture1(pg) {
   pg.pop(); // End main buffer state cleanly
 }
 function ahmadSetup2() {
-
   // 2. Array of custom colors (flowery)
   centerColors = [
     color(255, 204, 0),   // Warm yellow
@@ -212,4 +188,22 @@ function ahmadTexture2(pg) {
   pg.rect(225, 290, 50, 200);
 
   // 4. Render the mapped surfaces to the canvas
+}
+function keyPressed() {
+    switch (key) {
+        case "c":
+            pMapper.toggleCalibration();
+            break;
+        case "f":
+            let fs = fullscreen();
+            fullscreen(!fs);
+            break;
+        case "l":
+            pMapper.load("maps/map.json");
+            break;
+
+        case "s":
+            pMapper.save("map.json");
+            break;
+    }
 }
