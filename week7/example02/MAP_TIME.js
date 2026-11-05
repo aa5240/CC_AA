@@ -1,7 +1,7 @@
 
 let pMapper;
 let quad0, quad1; // two surfaces
-
+let centerColors = [];
 // Texture 1 variables
 let x = [];
 let y = [];
@@ -21,6 +21,9 @@ let pos = 0;
 let myAnimation;
 const b = ["#F44336", "#8BC34A", "#03A9F4"];
 const f = ["#FF9800", "#FF0C94", "#F7FF96"];
+let lastSecond = -1;         
+let secondStart = 0; 
+
 
 // LLM recommended switching to async function setup() to avoid errors with pMapper
 async function setup() {
@@ -30,7 +33,7 @@ async function setup() {
     pMapper = createProjectionMapper(this);
 
     quad0 = pMapper.createQuadMap(730,730); // width+height
-    quad1 = pMapper.createQuadMap(200,200); // width+height
+    quad1 = pMapper.createQuadMap(500,500); // width+height
 
     // loads calibration in the "maps" directory
     //pMapper.load("maps/map.json");
@@ -184,40 +187,29 @@ function ahmadTexture1(pg) {
   pg.pop(); // End main buffer state cleanly
 }
 function ahmadSetup2() {
-  const duration = 1000; // 1 second
-  myAnimation = setInterval(fillColors, duration);
+
+  // 2. Array of custom colors (flowery)
+  centerColors = [
+    color(255, 204, 0),   // Warm yellow
+    color(255, 100, 0),   // Sunburnt orange
+    color(255, 105, 180), // Pink
+    color(138, 43, 226)   // Purple
+  ];
 }
 
 function ahmadTexture2(pg) {
-  pg.push(); 
-  pg.noStroke();
-  let r = 10; // rate in seconds
-  let t = (millis() % (r * 1000)) / (r * 1000); // total loop time, outputs 0-1
+  // 3. Draw everything to the offscreen buffer using "pg."
+  pg.background(255, 209, 220);
 
-  // bg color
-  bg = paletteLerp(
-    [
-      [b[0], 0],
-      [b[1], 0.5],
-      [b[2], 1],
-    ],
-    t
-  );
-  pg.background(bg);
-  // size of shape
-  let s = map(t, 0, 1, 0, 300);
+  // Pick an array index based on the minute
+  let colorIndex = minute() % centerColors.length;
 
-  // fill of shape, position controlled by fillColors()
-  pg.fill(f[pos]);
-  
-  pg.ellipse(100, 100, s);
+  pg.fill(centerColors[colorIndex]);
+  pg.ellipse(250, 250, 100, 100);
 
-  pg.pop();
-}
+  // Attach rectangle stem to circle
+  pg.fill(144, 238, 144);
+  pg.rect(225, 290, 50, 200);
 
-function fillColors() {
-  if (pos == b.length - 1) {
-    pos = 0;
-  }
-  pos++;
+  // 4. Render the mapped surfaces to the canvas
 }
