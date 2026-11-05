@@ -30,8 +30,8 @@ async function setup() {
     // create mapper object
     pMapper = createProjectionMapper(this);
 
-    quad0 = pMapper.createQuadMap(730,730); // width+height
-    quad1 = pMapper.createQuadMap(500,500); // width+height
+    quad0 = pMapper.createQuadMap(600,600, 2, 2); // width+height
+    quad1 = pMapper.createQuadMap(500,500, 2, 2); // width+height
 
     // loads calibration in the "maps" directory
     //pMapper.load("maps/map.json");
@@ -43,13 +43,11 @@ async function setup() {
 function draw() {
     background(0);
     quad0.displaySketch(ahmadTexture1);
-    quad1.displaySketch(ahmadTexture2);
+   quad1.displaySketch(ahmadTexture2);
 
 }
 
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-}
+
 /* First Texture/Sketch */
 // Helper function to pick new words and positions
 function updateWords() {
@@ -57,8 +55,8 @@ function updateWords() {
   for (let i = 0; i < 10; i++) {
     activeWords.push({
       text: random(words),
-      x: random(730),
-      y: random(730),
+      x: random(600),
+      y: random(600),
       size: random(16, 48)
     });
   }
@@ -189,6 +187,7 @@ function ahmadTexture2(pg) {
 
   // 4. Render the mapped surfaces to the canvas
 }
+
 function keyPressed() {
     switch (key) {
         case "c":
@@ -207,3 +206,6 @@ function keyPressed() {
             break;
     }
 }
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight); }
