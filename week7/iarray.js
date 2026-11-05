@@ -1,7 +1,7 @@
 let shapes = []; // Array to hold shape objects
 
 function setup() {
-  createCanvas(710, 780, WEBGL);
+  createCanvas(windowWidth, windowHeight, WEBGL);
 
   // Start with one initial centered torus
   shapes.push({
@@ -15,7 +15,7 @@ function setup() {
    myShader = buildColorShader(shaderCallback);
 
   // Set radius for each shape based on canvas dimensions
-  let radius = min(width, height) / 2;
+  let radius = min(windowWidth, windowHeight) / 2;
   secondsRadius = radius * 0.71;
   minutesRadius = radius * 0.6;
   hoursRadius = radius * 0.5;
@@ -87,9 +87,9 @@ function mousePressed() {
   let shapeTypes = ['torus', 'box', 'sphere', 'cone'];
 
   shapes.push({
-    x: random(-200, 200),
-    y: random(-200, 200),
-    z: random(-200, 200),
+    x: random(-windowWidth/2, windowWidth/2),
+    y: random(-windowHeight/2, windowHeight/2),
+    z: random(-windowHeight/2, windowHeight/2),
     type: random(shapeTypes) // Pick a random shape from array
   });
 }
