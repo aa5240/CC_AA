@@ -62,6 +62,34 @@ function updateWords() {
   }
 }
 
+
+function ahmadSetup2() {
+  // 2. Array of custom colors (flowery)
+  centerColors = [
+    color(255, 204, 0),   // Warm yellow
+    color(255, 100, 0),   // Sunburnt orange
+    color(255, 105, 180), // Pink
+    color(138, 43, 226)   // Purple
+  ];
+}
+
+function ahmadTexture2(pg) {
+  // 3. Draw everything to the offscreen buffer using "pg."
+  pg.background(255, 209, 220);
+
+  // Pick an array index based on the minute
+  let colorIndex = minute() % centerColors.length;
+
+  pg.fill(centerColors[colorIndex]);
+  pg.ellipse(250, 250, 100, 100);
+
+  // Attach rectangle stem to circle
+  pg.fill(144, 238, 144);
+  pg.rect(225, 290, 50, 200);
+
+  // 4. Render the mapped surfaces to the canvas
+}
+
 function ahmadSetup1() {
   c = [];
   for (let i = 0; i < numCircles; i++) {
@@ -160,32 +188,6 @@ function ahmadTexture1(pg) {
   }
 
   pg.pop(); // End main buffer state cleanly
-}
-function ahmadSetup2() {
-  // 2. Array of custom colors (flowery)
-  centerColors = [
-    color(255, 204, 0),   // Warm yellow
-    color(255, 100, 0),   // Sunburnt orange
-    color(255, 105, 180), // Pink
-    color(138, 43, 226)   // Purple
-  ];
-}
-
-function ahmadTexture2(pg) {
-  // 3. Draw everything to the offscreen buffer using "pg."
-  pg.background(255, 209, 220);
-
-  // Pick an array index based on the minute
-  let colorIndex = minute() % centerColors.length;
-
-  pg.fill(centerColors[colorIndex]);
-  pg.ellipse(250, 250, 100, 100);
-
-  // Attach rectangle stem to circle
-  pg.fill(144, 238, 144);
-  pg.rect(225, 290, 50, 200);
-
-  // 4. Render the mapped surfaces to the canvas
 }
 
 function keyPressed() {
