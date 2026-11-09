@@ -1,43 +1,33 @@
-// Create the global variables: playing, video, and button.
-// Set playing to false so the video loads in as paused.
+// Define global variables for video, button, and playback state
 let playing = false;
 let video;
 let button;
 
-function setup() {
-  // Use the noCanvas() function to remove the canvas.
+async function setup() {
+  // Remove canvas to let DOM elements render directly on the web page
   noCanvas();
 
-  // Upload the video in the canvas's assets directory, and
-  // use the createVideo() function to load in the video to the code.
-  // This createVideo() function will build a p5.MediaElement class.
-  // It's best to upload multiple video formats so the video
-  // is visible within different browsers.
-  video = createVideo(['/assets/DSCN1725.mov', '/assets/DSCN1725.webm']);
+  // Load video stream asynchronously with distinct format options
+  video = createVideo(['/assets/DSCN1725.mp4', '/assets/DSCN1725.webm']);
+  video.volume(0); // Mute video so browsers allow playback
 
-  // Create a button next to the video that says 'play.'
+  // Create an HTML button element labeled 'play'
   button = createButton('play');
 
-  // The button will call the toggleVid() function
-  // whenever it is pressed.
+  // Trigger toggleVid() whenever the button is pressed
   button.mousePressed(toggleVid);
 }
 
 function toggleVid() {
-  // If the video is playing, pause the video with
-  // the pause() method and make the button's text say 'play.'
-  if (playing == true) {
+  // Pause or loop video based on current playing state
+  if (playing) {
     video.pause();
     button.html('play');
-
-    // If the video is paused, play the video with
-    // the loop() method and make the button's text say 'pause.'
   } else {
     video.loop();
     button.html('pause');
   }
 
-  // Once the video playing status has been toggled,
-  // switch playing to the opposite boolean value.
+  // Toggle boolean status
   playing = !playing;
 }
