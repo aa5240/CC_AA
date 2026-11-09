@@ -6,7 +6,7 @@ async function setup() {
   noCanvas();
 
   // Load video asynchronously with format fallbacks [2, 5]
-  video = createVideo(['/assets/DSCN1726.mp4', '/assets/DSCN1726.webm']);
+  video = createVideo(['assets/DSCN1726.mp4', 'assets/DSCN1726.webm']);
 
   // Mute volume to satisfy browser playback policies [3]
   video.volume(0);
