@@ -26,7 +26,7 @@ function draw(){
   if (bDoExportSvg == true){
     beginRecordSvg(this, "myOutput_" + month() + day() + year() + "_" + myRandomSeed + ".svg");
   }
-
+// code found in p5.js forums: Use push/pop to isolate transformations for each shape, updated by LLM
   // define your drawing below
   myDrawing(); 
 
@@ -34,8 +34,8 @@ function draw(){
     endRecordSvg(); 
     bDoExportSvg = false;
   }
-}
-
+}// had to refer to LLM for help with the code, because it was not functional after the last visual studio code update
+// I took the same functions from before and switched out the vaules in order for the drawings to appear seamlessly
 function draw() { 
   strokeWeight(1); 
   let s = random(50,200);
@@ -49,12 +49,13 @@ polarTriangles(30, 50, 10 );
 function regenerate(){
   myRandomSeed = round(millis()); 
 }
-
+// had to clean up the code, because nothing was functional after the last visual studio code update
 // Set the SVG to be exported when the "Export SVG" button is pressed
 function initiateSvgExport(){
   bDoExportSvg = true; 
 }
-
+// code found in p5.js forums: Use createButton for UI controls, updated by LLM for the new p5.js v2 syntax
+// updated all of my codes to fit into the new p5.js v2 syntax, because the old syntax was not functional after the last visual studio code update
 function UI() {
   regenerateButton = createButton('Regenerate');
   regenerateButton.position(0, height);
@@ -65,3 +66,4 @@ function UI() {
   exportSvgButton.mousePressed(initiateSvgExport); // run initiateSvgExport() when pressed
 }
 }
+// hopfully it is easier to see and regenerate now
