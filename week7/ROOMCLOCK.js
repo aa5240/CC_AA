@@ -1,4 +1,4 @@
-// Global variables
+// Global variables, cleaned up the code with the help of LLM.
 let pMapper;
 let quad0;
 let secondsRadius, minutesRadius, hoursRadius, clockDiameter;
