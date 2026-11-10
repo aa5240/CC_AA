@@ -1,4 +1,4 @@
-// Array to hold shape objects and videos
+// Array to hold shape objects and videos: the work entials videos in a 3D orbiting ring with interactive controls.
 let shapeObjects = [];
 let videos = [];
 let selectedShape = null;
@@ -14,19 +14,19 @@ let videoNames = [
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
-  // Load videos asynchronously using async/await (p5.js v2)
-  for (let name of videoNames) {
-    let v = createVideo([`assets/${name}.mp4`, `assets/${name}.webm`]);
-    v.volume(0);  // Mute for browser autoplay policies
-    v.loop();     // Continuously loop video
+  // Load videos asynchronously using async/await (p5.js v2) LLM recommendation: Use createVideo with multiple formats for better browser compatibility
+  for (let name of videoNames) { // Code found on p5.js forums: Use createVideo with multiple formats for better browser compatibility
+    let v = createVideo([`assets/${name}.mp4`, `assets/${name}.webm`]); // refrain from using .mov for web compatibility, advice found on p5.js forums
+    v.volume(0);  // Mute for browser autoplay policies (LLM recommendation: Mute videos to allow autoplay)
+    v.loop();     // Continuously loop video (LLM recommendation: Loop videos for continuous playback)
     v.hide();
     videos.push(v);
   }
-
+// recommended by LLM: Use Promise.all to ensure all videos are loaded before proceeding
   // Set up 3D video objects in a circular orbit arrangement
-  let total = videos.length;
-  let orbitRadius = 1000; // Radius of the orbital ring
-
+  let total = videos.length; // Total number of video cubes
+  let orbitRadius = 1000; // Radius of the orbital ring 
+// code found on p5.js forums: Use createVideo with multiple formats for better browser compatibility, updated by LLM
   for (let i = 0; i < total; i++) {
     let baseAngle = (TWO_PI / total) * i; // Initial angle spacing
 
@@ -46,9 +46,11 @@ async function setup() {
 function draw() {
   background(0);
 
-  // Enable WebGL camera orbiting, panning, and zooming
+  // Enable WebGL camera orbiting, panning, and zooming, code referenced from p5.js examples and forums: Use orbitControl for interactive 3D navigation
   orbitControl();
-
+// code for lighting and shading adapted from p5.js examples: Use directionalLight for dynamic lighting
+  directionalLight(255, 255, 255, 2, 12, -10);
+  ambientLight(80);
   lights();
 
   // Listen for continuous key presses (W, A, S/X, D)
