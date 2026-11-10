@@ -1,4 +1,6 @@
 let shapes = []; // Array to hold shape objects
+// the project goes after the whole window and screen for a more immersive experience, with the shapes orbiting around the center of the screen. 
+// The user can interact with the shapes by clicking to add new ones, and they will continuously rotate for a dynamic visual effect.
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
@@ -10,7 +12,7 @@ function setup() {
     z: 0,
     type: 'torus'
   });
-// Finally was able to set up teh shader to 3D objects.
+// Finally was able to set up the shader to 3D objects.
   describe('3D shapes multiply and randomize across space on click.');
    myShader = buildColorShader(shaderCallback);
 
@@ -81,8 +83,8 @@ function draw() {
     pop();
   }
 }
-
-// Add a new position and random shape type on click
+// code link is https://p5js.org/reference/p5/loadShader/, updated by LLM: Use shader() for dynamic color effects
+// Add a new position and random shape type on click, updated by LLM: Use mousePressed for interactive shape addition
 function mousePressed() {
   let shapeTypes = ['torus', 'box', 'sphere', 'cone'];
 
@@ -90,6 +92,6 @@ function mousePressed() {
     x: random(-windowWidth/2, windowWidth/2),
     y: random(-windowHeight/2, windowHeight/2),
     z: random(-windowHeight/2, windowHeight/2),
-    type: random(shapeTypes) // Pick a random shape from array
+    type: random(shapeTypes) // Pick a random shape from array, code found in p5.js forums: Use random() for random selection, updated by LLM
   });
 }
