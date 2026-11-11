@@ -29,7 +29,6 @@ function draw() {
   }
 
   // Extract volume energy for frequency bands (0 to 255)
-   let bass = fft ? fft.getEnergy('bass') : 0;
   let mid = fft ? fft.getEnergy('mid') : 0;
   let treble = fft ? fft.getEnergy('treble') : 0;
 
