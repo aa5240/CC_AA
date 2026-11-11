@@ -24,7 +24,16 @@ async function setup() {
 
 function draw() {
   background(20);
+  if (fft) {
+    fft.analyze();
+  }
 
+  // Extract volume energy for frequency bands (0 to 255)
+   let bass = fft ? fft.getEnergy('bass') : 0;
+  let mid = fft ? fft.getEnergy('mid') : 0;
+  let treble = fft ? fft.getEnergy('treble') : 0;
+
+  let orbitSpeed = frameCount * 0.01;
   // Autonomous 3D lighting
   lights();
 
@@ -32,17 +41,6 @@ function draw() {
   rotateY(frameCount * 0.005);
   rotateX(PI / 6 + sin(frameCount * 0.003) * 0.2);
 
-  // Analyze frequency spectrum each frame
-  if (fft) {
-    fft.analyze();
-  }
-
-  // Extract volume energy for frequency bands (0 to 255)
-  let bass = fft ? fft.getEnergy('bass') : 0;
-  let mid = fft ? fft.getEnergy('mid') : 0;
-  let treble = fft ? fft.getEnergy('treble') : 0;
-
-  let orbitSpeed = frameCount * 0.01;
 
   for (let i = 0; i < numShapes; i++) {
     // Calculate orbital positioning using sine and cosine
