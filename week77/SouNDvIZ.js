@@ -9,26 +9,25 @@ let baseRadius = 1000;
 let bgVideo;
 let myShader;
 
-// Array to hold active treble particles
-let particles = [];
-
-// Asynchronous setup using p5.js v2
+// Asynchronous setup in p5.js v2
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
+  // Initialize FFT frequency analyzer (256 bands)
   fft = new p5.FFT(256);
 
   volumeSlider = createSlider(0, 100, 50);
   volumeSlider.position(20, 20);
 
-  // Load looping background video
+  // Load and loop background video
   bgVideo = createVideo(['assets/DSCN1414.mp4']);
   bgVideo.hide();
   bgVideo.loop();
 
   try {
+    // Await audio and shader loading
     mSound = await loadSound('assets/PER_FINAL.mp3');
-    mSound.connect(fft);
+    mSound.connect(fft); // Connect sound directly to FFT analyzer
 
     myShader = await loadShader('shaders/myShader.vert', 'shaders/myShader.frag');
   } catch (err) {
@@ -43,7 +42,7 @@ function draw() {
   if (bgVideo) {
     push();
     resetMatrix();
-    resetShader();
+    resetShader(); // Use default rendering for video background plane
     translate(0, 0, -1500);
     noStroke();
     texture(bgVideo);
@@ -58,7 +57,7 @@ function draw() {
     mSound.amp(vol);
   }
 
-  // Extract sound frequencies
+  // 2. Calculate Audio Frequency Bands
   let spectrum = fft ? fft.analyze() : [];
   let bass = energy(spectrum, 20, 500);
   let mid = energy(spectrum, 250, 2000);
@@ -69,14 +68,15 @@ function draw() {
 
   lights();
 
-  // 2. Render 3D Shapes with Custom Shader
+  // 3. Map Bass and Frequencies to Shader Uniforms
   if (myShader) {
     shader(myShader);
     myShader.setUniform('u_time', millis() * 0.001);
-    myShader.setUniform('u_bass', bass);
+    myShader.setUniform('u_bass', bass);     // Send bass frequency to GPU
     myShader.setUniform('u_treble', treble);
   }
 
+  // 4. Render Orbiting 3D Shapes
   for (let i = 0; i < numShapes; i++) {
     let angle = (TWO_PI / numShapes) * i + orbitSpeed;
     let x = cos(angle) * currentRadius;
@@ -102,53 +102,9 @@ function draw() {
 
     pop();
   }
-
-  // 3. Spawn Treble Burst Particles
-  if (treble > 0.35) {
-    let spawnCount = floor(map(treble, 0.35, 1.0, 2, 8));
-    for (let i = 0; i < spawnCount; i++) {
-      particles.push(new Particle(0, 0, 0, treble));
-    }
-  }
-
-  // 4. Update and Draw 3D Fading Particles
-  resetShader(); // Reset shader for particle rendering
-  for (let i = particles.length - 1; i >= 0; i--) {
-    particles[i].update();
-    particles[i].draw();
-
-    if (particles[i].life <= 0) {
-      particles.splice(i, 1);
-    }
-  }
 }
 
-// 3D Fading Particle Class Definition
-class Particle {
-  constructor(x, y, z, energyLevel) {
-    this.pos = createVector(x, y, z);
-    // Random 3D direction vector scaled by treble energy
-    this.vel = p5.Vector.random3D().mult(random(5, 15) * energyLevel);
-    this.life = 255;
-    this.size = random(8, 20);
-  }
-
-  update() {
-    this.pos.add(this.vel);
-    this.life -= 8; // Fade transparency over time
-  }
-
-  draw() {
-    push();
-    translate(this.pos.x, this.pos.y, this.pos.z);
-    noStroke();
-    fill(120, 220, 255, this.life);
-    sphere(this.size);
-    pop();
-  }
-}
-
-// Frequency energy calculation helper
+// Energy helper for p5.sound v2
 function energy(spectrum, lowHz, highHz) {
   if (!spectrum || spectrum.length === 0) return 0;
   let nyquist = getAudioContext().sampleRate / 2;
@@ -160,6 +116,7 @@ function energy(spectrum, lowHz, highHz) {
   return constrain(map(20 * Math.log10(avg + 1e-6), -100, -10, 0, 1), 0, 1);
 }
 
+// Click to resume audio context and start sound loop
 function mousePressed() {
   userStartAudio();
   if (mSound && !mSound.isPlaying() && !useMic) {
