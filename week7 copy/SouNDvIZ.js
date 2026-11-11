@@ -33,7 +33,7 @@ class MorphingObject {
 
     let size = this.baseSize + pulseBoost;
 
-    // Morph 3D geometry based on audio volume loudness thresholds!
+    // Morph 3D geometry based on audio volume thresholds!
     if (volumeLevel > 0.4) {
       torus(size * 0.6, size * 0.2); // Loudest beats morph into a torus
     } else if (volumeLevel > 0.25) {
