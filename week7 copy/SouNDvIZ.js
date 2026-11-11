@@ -12,7 +12,7 @@ async function setup() {
 
   // Load sound asynchronously in p5.js v2
   try {
-    mSound = await loadSound('PER_FINAL.mp3');
+    mSound = await loadSound('assets/PER_FINAL.mp3');
     userStartAudio();
     if (mSound && mSound.isLoaded()) {
       mSound.loop(); // Start looping audio automatically
