@@ -1,79 +1,48 @@
 let mSound;
-let fft;
-let numShapes = 7;
-let orbitRadius = 300;
+let meter;
 
+// Use async setup for p5.js v2 asset loading
 async function setup() {
-  // Initialize 3D canvas in WEBGL mode
-  createCanvas(windowWidth, windowHeight, WEBGL);
-
-  // Initialize FFT frequency analyzer
-  fft = new p5.FFT();
-
-  // Load sound asynchronously in p5.js v2
-  try {
-    mSound = await loadSound('assets/PER_FINAL.mp3');
-    userStartAudio();
-    if (mSound) {
-      mSound.loop(); // Start looping audio automatically once loaded
-    }
-  } catch (err) {
-    console.log('Audio loading error:', err);
-  }
+  createCanvas(800, 600);
+  colorMode(HSB, 360, 100, 100);
+  
+  // 1. Await audio loading
+  mSound = await loadSound('assets/PER_FINAL.mp3');
+  
+  // 2. Initialize analyzer and connect audio
+  meter = new p5.Amplitude();
+  mSound.connect(meter);
 }
 
 function draw() {
-  background(20);
-  if (fft) {
-    fft.analyze();
-  }
-
-  // Extract volume energy for frequency bands (0 to 255)
-  let mid = fft ? fft.getEnergy('mid') : 0;
-  let treble = fft ? fft.getEnergy('treble') : 0;
-
-  let orbitSpeed = frameCount * 0.01;
-  // Autonomous 3D lighting
-  lights();
-
-  // Scene-wide camera rotations (Y spin + dynamic X tilt)
-  rotateY(frameCount * 0.005);
-  rotateX(PI / 6 + sin(frameCount * 0.003) * 0.2);
-
-
-  for (let i = 0; i < numShapes; i++) {
-    // Calculate orbital positioning using sine and cosine
-    let angle = (TWO_PI / numShapes) * i + orbitSpeed;
-    let x = cos(angle) * orbitRadius;
-    let z = sin(angle) * orbitRadius;
-
-    // Isolate 3D transforms per object
-    push();
-    translate(x, 0, z);
-    rotateY(-angle);
-    rotateX(frameCount * 0.02);
-
-    noStroke();
-
-    // Alternate frequency reactivity across shapes
-    if (i % 3 === 0) {
-      fill(255, 100, 100);
-      let bassSize = map(bass, 0, 255, 50, 160);
-      box(bassSize);
-    } else if (i % 3 === 1) {
-      fill(100, 255, 100);
-      let midSize = map(mid, 0, 255, 30, 110);
-      sphere(midSize);
-    } else {
-      fill(100, 100, 255);
-      let trebleSize = map(treble, 0, 255, 20, 80);
-      torus(trebleSize, 15);
-    }
-
-    pop();
-  }
+  background(220, 20, 15);
+  
+  // 3. Get current volume level (0.0 to 1.0)
+  let level = meter.getLevel();
+  
+  // 4. Map volume level to circle size and color hue
+  let circleSize = map(level, 0, 0.5, 60, 400, true);
+  let hueVal = map(level, 0, 0.5, 180, 360, true);
+  
+  // 5. Draw dynamic audio-reactive geometry
+  translate(width / 2, height / 2);
+  
+  // Inner pulsing core
+  fill(hueVal, 80, 100);
+  noStroke();
+  circle(0, 0, circleSize);
+  
+  // Outer reactive ring
+  noFill();
+  stroke(hueVal, 50, 100);
+  strokeWeight(level * 30);
+  circle(0, 0, circleSize * 1.4);
 }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+function mousePressed() {
+  if (mSound.isPlaying()) {
+    mSound.stop();
+  } else {
+    mSound.play();
+  }
 }
