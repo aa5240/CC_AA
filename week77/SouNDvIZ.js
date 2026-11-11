@@ -20,7 +20,7 @@ async function setup() {
   volumeSlider.position(20, 20);
 
   // Load and loop background video
-  bgVideo = createVideo(['assets/DSCN1414.mp4']);
+  bgVideo = createVideo(['assets/DSCN1412.mp4']);
   bgVideo.hide();
   bgVideo.loop();
 
