@@ -17,6 +17,7 @@ import { p5soundNode, resolveInput } from "../core/p5soundNode.js";
  * @param {Number} [smoothing] Smooth the amplitude analysis by averaging with the last analysis frame. 0.0 is no time averaging with the last analysis frame.
  * @example
  * <div>
+ * <code>
  * let sound, amp, cnv;
  *
  * async function setup() {
