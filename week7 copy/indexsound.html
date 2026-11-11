@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sound Visualization</title>
 
-    <!-- 1. Main p5.js v2 Core Library -->
-    <script src="https://cdn.jsdelivr.net/npm/p5@2.3.4/lib/p5.min.js"></script>
+  <!-- 1. Load core p5.js first -->
+<script src="https://cdn.jsdelivr.net/npm/p5@2.3.4/lib/p5.min.js"></script>
 
-    <!-- 2. p5.sound Addon Library (Fixes p5.FFT & userStartAudio errors) -->
-    <script src="https://cdn.jsdelivr.net/npm/p5.sound@0.9.0/lib/p5.sound.min.js"></script>
-</head>
-<body>
-    <!-- 3. Your Sketch File -->
-    <script src="SouNDvIZ.js"></script>
-</body>
+<!-- 2. Load p5.sound second -->
+<script src="https://cdn.jsdelivr.net/npm/p5.sound@0.4.2/dist/p5.sound.min.js"></script>
+
+<!-- 3. Load your sketch last -->
+<script src="SouNDvIZ.js"></script>
 </html>
