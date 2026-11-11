@@ -16,9 +16,9 @@ varying float vDisplacement;
 void main() {
   vTexCoord = aTexCoord;
 
-  // Surface vertex displacement driven by bass frequency
+  // Deform 3D surface vertices along normals using u_bass
   float wave = sin(aPosition.x * 0.05 + u_time * 6.0) * cos(aPosition.y * 0.05 + u_time * 6.0);
-  vec3 displacedPosition = aPosition + aNormal * (wave * u_bass * 40.0);
+  vec3 displacedPosition = aPosition + aNormal * (wave * u_bass * 50.0);
 
   vDisplacement = wave * u_bass;
 
