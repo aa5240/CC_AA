@@ -1,3 +1,5 @@
+precision mediump float;
+
 attribute vec3 aPosition;
 attribute vec3 aNormal;
 attribute vec2 aTexCoord;
@@ -14,12 +16,11 @@ varying float vDisplacement;
 void main() {
   vTexCoord = aTexCoord;
 
-  // Calculate surface wave distortion based on bass energy
+  // Surface vertex displacement driven by bass frequency
   float wave = sin(aPosition.x * 0.05 + u_time * 6.0) * cos(aPosition.y * 0.05 + u_time * 6.0);
   vec3 displacedPosition = aPosition + aNormal * (wave * u_bass * 40.0);
 
   vDisplacement = wave * u_bass;
 
-  vec4 positionVec4 = vec4(displacedPosition, 1.0);
-  gl_Position = uProjectionMatrix * uModelViewMatrix * positionVec4;
+  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(displacedPosition, 1.0);
 }

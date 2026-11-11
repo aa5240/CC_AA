@@ -1,108 +1,66 @@
+let particles = [];
 let mSound;
-let mic;
 let fft;
-let volumeSlider;
-let useMic = false;
-let numShapes = 30;
-let baseRadius = 1000;
 
-let bgVideo;
-let myShader;
-
-// Asynchronous setup in p5.js v2
+// Use async setup for p5.js v2 asset loading
 async function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
-
+  createCanvas(windowWidth, windowHeight);
   fft = new p5.FFT(256);
-
-  volumeSlider = createSlider(0, 100, 50);
-  volumeSlider.position(20, 20);
-
-  // Load looping background video
-  bgVideo = createVideo(['assets/DSCN1414.mp4']);
-  bgVideo.hide();
-  bgVideo.loop();
 
   try {
     mSound = await loadSound('assets/PER_FINAL.mp3');
     mSound.connect(fft);
-
-    myShader = await loadShader('shaders/myShader.vert', 'shaders/myShader.frag');
   } catch (err) {
-    console.log('Asset loading error:', err);
+    console.log('Audio load error:', err);
   }
 }
 
 function draw() {
   background(20);
 
-  // 1. Render Video Background (with resetShader)
-  if (bgVideo) {
-    push();
-    resetMatrix();
-    resetShader(); // Ensure video plane is drawn with default texture rendering
-    translate(0, 0, -1500);
-    noStroke();
-    texture(bgVideo);
-    plane(width * 3, height * 3);
-    pop();
-  }
-
-  orbitControl();
-
-  if (mSound && mSound.isPlaying()) {
-    let vol = volumeSlider.value() / 100;
-    mSound.amp(vol);
-  }
-
-  // Extract sound frequencies
   let spectrum = fft ? fft.analyze() : [];
-  let bass = energy(spectrum, 20, 500);
-  let mid = energy(spectrum, 250, 2000);
   let treble = energy(spectrum, 2000, 12000);
 
-  let currentRadius = baseRadius + map(mouseX, 0, width, -100, 100, true);
-  let orbitSpeed = frameCount * 0.01;
-
-  lights();
-
-  // 2. Activate Custom Shader for 3D Shapes
-  if (myShader) {
-    shader(myShader);
-    myShader.setUniform('u_time', millis() * 0.001);
-    myShader.setUniform('u_bass', bass);
-    myShader.setUniform('u_treble', treble);
+  // Spawn new particles on high treble notes
+  if (treble > 0.3) {
+    particles.push(new Particle(width / 2, height / 2));
   }
 
-  // 3. Render Orbiting 3D Shapes
-  for (let i = 0; i < numShapes; i++) {
-    let angle = (TWO_PI / numShapes) * i + orbitSpeed;
-    let x = cos(angle) * currentRadius;
-    let z = sin(angle) * currentRadius;
+  // Update, draw, and remove dead particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    particles[i].update();
+    particles[i].draw();
 
-    push();
-    translate(x, 0, z);
-    rotateY(-angle);
-    rotateX(frameCount * 0.01);
-
-    noStroke();
-
-    if (i % 3 === 0) {
-      let bassSize = map(bass, 0, 1, 50, 180);
-      box(bassSize);
-    } else if (i % 3 === 1) {
-      let midSize = map(mid, 0, 1, 30, 130);
-      sphere(midSize);
-    } else {
-      let trebleSize = map(treble, 0, 1, 20, 90);
-      torus(trebleSize, 15);
+    // Remove particle once completely transparent
+    if (particles[i].alpha <= 0) {
+      particles.splice(i, 1);
     }
-
-    pop();
   }
 }
 
-// Frequency energy calculation helper
+// Particle class definition
+class Particle {
+  constructor(x, y) {
+    this.pos = createVector(x, y);
+    this.vel = p5.Vector.random2D().mult(random(2, 6));
+    this.alpha = 255; // Initial opacity (255 = fully visible)
+    this.size = random(6, 16);
+  }
+
+  update() {
+    this.pos.add(this.vel);
+    this.alpha -= 4; // Fade out by decreasing alpha each frame
+  }
+
+  draw() {
+    noStroke();
+    // 4th parameter sets the fading opacity
+    fill(100, 200, 255, this.alpha);
+    circle(this.pos.x, this.pos.y, this.size);
+  }
+}
+
+// Helper function to calculate frequency band averages
 function energy(spectrum, lowHz, highHz) {
   if (!spectrum || spectrum.length === 0) return 0;
   let nyquist = getAudioContext().sampleRate / 2;
@@ -115,38 +73,9 @@ function energy(spectrum, lowHz, highHz) {
 }
 
 function mousePressed() {
-  userStartAudio(); // Unlock browser audio permissions
-  if (mSound && !mSound.isPlaying() && !useMic) {
+  userStartAudio();
+  if (mSound && !mSound.isPlaying()) {
     mSound.loop();
-  }
-}
-
-function keyPressed() {
-  if (key === 'f' || key === 'F') {
-    fullscreen(!fullscreen());
-  }
-
-  if (key === 'm' || key === 'M') {
-    if (!useMic) {
-      mic = new p5.AudioIn();
-      mic.disconnect();
-      mic.start();
-      mic.connect(fft);
-      if (mSound && mSound.isPlaying()) mSound.pause();
-      useMic = true;
-    } else {
-      if (mic) mic.stop();
-      if (mSound) mSound.loop();
-      useMic = false;
-    }
-  }
-
-  if (key === ' ') {
-    if (mSound.isPlaying()) {
-      mSound.pause();
-    } else {
-      mSound.loop();
-    }
   }
 }
 
