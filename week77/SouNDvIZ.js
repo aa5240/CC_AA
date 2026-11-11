@@ -5,13 +5,7 @@ let volumeSlider;
 let useMic = false;
 let numShapes = 30;
 let baseRadius = 1000;
-let videos = [];
-let videoNames = [
-  'DSCN1718', 'DSCN1719', 'DSCN1720', 'DSCN1721', 'DSCN1723', 'DSCN1724', 'DSCN1725',
-  'DSCN1726', 'DSCN1727', 'DSCN1728', 'DSCN1729', 'DSCN1730', 'DSCN1731', 'DSCN1733', 
-  'DSCN1734', 'DSCN1735', 'DSCN1736', 'DSCN1737', 'DSCN1738', 'DSCN1739', 'DSCN1495', 
-  'DSCN1403', 'DSCN1404', 'DSCN1405', 'DSCN1406', 'DSCN1407', 'DSCN1409', 'DSCN1410', 
-  'DSCN1411', 'DSCN1412', 'DSCN1413' ]
+
 
 // Global variables for video background and custom shader
 let bgVideo;
@@ -29,10 +23,9 @@ async function setup() {
   volumeSlider.position(20, 20);
 
   // Load video element, hide HTML tag, and start looping
-  bgVideo = createVideo([`assets/${name}.mp4`, `assets/${name}.webm`]);
+  bgVideo = createVideo(['assets/DSCN1414.mp4']);
   bgVideo.hide();
   bgVideo.loop();
-  
 
   // Load sound and GLSL shaders asynchronously
   try {
