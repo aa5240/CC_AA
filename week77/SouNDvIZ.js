@@ -1,33 +1,30 @@
 let mSound;
-let mic;
 let fft;
 let volumeSlider;
-let useMic = false;
 let numShapes = 30;
 let baseRadius = 1000;
 
 let bgVideo;
 let myShader;
 
-// Asynchronous setup in p5.js v2
+// Asynchronous setup using p5.js v2
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
-  // Initialize FFT frequency analyzer (256 bands)
+  // Initialize FFT analyzer for spectrum and waveform analysis
   fft = new p5.FFT(256);
 
   volumeSlider = createSlider(0, 100, 50);
   volumeSlider.position(20, 20);
 
-  // Load and loop background video
+  // Load looping background video
   bgVideo = createVideo(['assets/DSCN1412.mp4']);
   bgVideo.hide();
-  bgVideo.loop();
+  bgVideo.volume(0); // Mute video for browser autoplay
 
   try {
-    // Await audio and shader loading
     mSound = await loadSound('assets/PER_FINAL.mp3');
-    mSound.connect(fft); // Connect sound directly to FFT analyzer
+    mSound.connect(fft);
 
     myShader = await loadShader('shaders/myShader.vert', 'shaders/myShader.frag');
   } catch (err) {
@@ -38,11 +35,11 @@ async function setup() {
 function draw() {
   background(20);
 
-  // 1. Render Looping Video Background
+  // 1. Render Video Background
   if (bgVideo) {
     push();
     resetMatrix();
-    resetShader(); // Use default rendering for video background plane
+    resetShader();
     translate(0, 0, -1500);
     noStroke();
     texture(bgVideo);
@@ -57,7 +54,7 @@ function draw() {
     mSound.amp(vol);
   }
 
-  // 2. Calculate Audio Frequency Bands
+  // 2. Extract Frequency Spectrum & Energy Bands
   let spectrum = fft ? fft.analyze() : [];
   let bass = energy(spectrum, 20, 500);
   let mid = energy(spectrum, 250, 2000);
@@ -68,15 +65,14 @@ function draw() {
 
   lights();
 
-  // 3. Map Bass and Frequencies to Shader Uniforms
+  // 3. Render 3D Shapes with Custom Shader
   if (myShader) {
     shader(myShader);
     myShader.setUniform('u_time', millis() * 0.001);
-    myShader.setUniform('u_bass', bass);     // Send bass frequency to GPU
+    myShader.setUniform('u_bass', bass);
     myShader.setUniform('u_treble', treble);
   }
 
-  // 4. Render Orbiting 3D Shapes
   for (let i = 0; i < numShapes; i++) {
     let angle = (TWO_PI / numShapes) * i + orbitSpeed;
     let x = cos(angle) * currentRadius;
@@ -102,9 +98,33 @@ function draw() {
 
     pop();
   }
+
+  // 4. Render Real-Time Audio Waveform Ring
+  if (fft) {
+    let waveform = fft.waveform(); // Get raw audio wave samples (-1 to 1)
+
+    resetShader(); // Ensure clean stroke rendering without shape shader
+    noFill();
+    stroke(100, 220, 255);
+    strokeWeight(3);
+
+    beginShape();
+    let ringRadius = currentRadius * 0.6;
+    for (let i = 0; i < waveform.length; i += 4) {
+      let angle = map(i, 0, waveform.length, 0, TWO_PI);
+      
+      // Modulate ring radius using real-time audio wave amplitude
+      let r = ringRadius + waveform[i] * 120;
+      let x = cos(angle) * r;
+      let z = sin(angle) * r;
+
+      vertex(x, 0, z);
+    }
+    endShape(CLOSE);
+  }
 }
 
-// Energy helper for p5.sound v2
+// Frequency energy calculation helper
 function energy(spectrum, lowHz, highHz) {
   if (!spectrum || spectrum.length === 0) return 0;
   let nyquist = getAudioContext().sampleRate / 2;
@@ -116,9 +136,11 @@ function energy(spectrum, lowHz, highHz) {
   return constrain(map(20 * Math.log10(avg + 1e-6), -100, -10, 0, 1), 0, 1);
 }
 
-// Click to resume audio context and start sound loop
 function mousePressed() {
   userStartAudio();
+  if (bgVideo) {
+    bgVideo.loop();
+  }
   if (mSound && !mSound.isPlaying()) {
     mSound.loop();
   }
@@ -129,25 +151,10 @@ function keyPressed() {
     fullscreen(!fullscreen());
   }
 
-  if (key === 'm' || key === 'M') {
-    if (!useMic) {
-      mic = new p5.AudioIn();
-      mic.disconnect();
-      mic.start();
-      mic.connect(fft);
-      if (mSound && mSound.isPlaying()) mSound.pause();
-      useMic = true;
-    } else {
-      if (mic) mic.stop();
-      if (mSound) mSound.loop();
-      useMic = false;
-    }
-  }
-
-  if (key === 'p' || key === 'P' ) {
-    if (mSound.isPlaying()) {
+  if (key === 'p' || key === 'P') {
+    if (mSound && mSound.isPlaying()) {
       mSound.pause();
-    } else {
+    } else if (mSound) {
       mSound.loop();
     }
   }
