@@ -9,7 +9,7 @@ let baseRadius = 1000;
 let bgVideo;
 let myShader;
 
-// Asynchronous asset loading in p5.js v2
+// Asynchronous setup in p5.js v2
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
@@ -18,7 +18,7 @@ async function setup() {
   volumeSlider = createSlider(0, 100, 50);
   volumeSlider.position(20, 20);
 
-  // Load video element and loop playback
+  // Load looping background video
   bgVideo = createVideo(['assets/DSCN1414.mp4']);
   bgVideo.hide();
   bgVideo.loop();
@@ -36,10 +36,11 @@ async function setup() {
 function draw() {
   background(20);
 
-  // Render looping video plane behind 3D visualizer
+  // 1. Render Video Background (with resetShader)
   if (bgVideo) {
     push();
     resetMatrix();
+    resetShader(); // Ensure video plane is drawn with default texture rendering
     translate(0, 0, -1500);
     noStroke();
     texture(bgVideo);
@@ -54,7 +55,7 @@ function draw() {
     mSound.amp(vol);
   }
 
-  // Analyze frequency bands
+  // Extract sound frequencies
   let spectrum = fft ? fft.analyze() : [];
   let bass = energy(spectrum, 20, 500);
   let mid = energy(spectrum, 250, 2000);
@@ -65,7 +66,7 @@ function draw() {
 
   lights();
 
-  // Send audio uniforms to GLSL GPU shader
+  // 2. Activate Custom Shader for 3D Shapes
   if (myShader) {
     shader(myShader);
     myShader.setUniform('u_time', millis() * 0.001);
@@ -73,7 +74,7 @@ function draw() {
     myShader.setUniform('u_treble', treble);
   }
 
-  // Render audio-reactive 3D shape ring
+  // 3. Render Orbiting 3D Shapes
   for (let i = 0; i < numShapes; i++) {
     let angle = (TWO_PI / numShapes) * i + orbitSpeed;
     let x = cos(angle) * currentRadius;
@@ -101,7 +102,7 @@ function draw() {
   }
 }
 
-// Frequency energy helper function
+// Frequency energy calculation helper
 function energy(spectrum, lowHz, highHz) {
   if (!spectrum || spectrum.length === 0) return 0;
   let nyquist = getAudioContext().sampleRate / 2;
@@ -114,6 +115,7 @@ function energy(spectrum, lowHz, highHz) {
 }
 
 function mousePressed() {
+  userStartAudio(); // Unlock browser audio permissions
   if (mSound && !mSound.isPlaying() && !useMic) {
     mSound.loop();
   }
