@@ -1,48 +1,95 @@
 let mSound;
-let meter;
+let fft;
+let numShapes = 7;
+let orbitRadius = 300;
 
-// Use async setup for p5.js v2 asset loading
 async function setup() {
-  createCanvas(800, 600);
-  colorMode(HSB, 360, 100, 100);
-  
-  // 1. Await audio loading
-  mSound = await loadSound('assets/PER_FINAL.mp3');
-  
-  // 2. Initialize analyzer and connect audio
-  meter = new p5.Amplitude();
-  mSound.connect(meter);
+  // 1. Initialize 3D canvas in WEBGL mode
+  createCanvas(windowWidth, windowHeight, WEBGL);
+
+  // 2. Initialize FFT frequency analyzer (256 bands)
+  fft = new p5.FFT(256);
+
+  try {
+    // 3. Load sound asynchronously in p5.js v2
+    mSound = await loadSound('assets/PER_FINAL.mp3');
+    
+    // 4. Connect the sound file directly to the FFT analyzer
+    mSound.connect(fft);
+  } catch (err) {
+    console.log('Audio loading error:', err);
+  }
 }
 
 function draw() {
-  background(220, 20, 15);
-  
-  // 3. Get current volume level (0.0 to 1.0)
-  let level = meter.getLevel();
-  
-  // 4. Map volume level to circle size and color hue
-  let circleSize = map(level, 0, 0.5, 60, 400, true);
-  let hueVal = map(level, 0, 0.5, 180, 360, true);
-  
-  // 5. Draw dynamic audio-reactive geometry
-  translate(width / 2, height / 2);
-  
-  // Inner pulsing core
-  fill(hueVal, 80, 100);
-  noStroke();
-  circle(0, 0, circleSize);
-  
-  // Outer reactive ring
-  noFill();
-  stroke(hueVal, 50, 100);
-  strokeWeight(level * 30);
-  circle(0, 0, circleSize * 1.4);
+  background(20);
+
+  // 5. Get current frequency spectrum array
+  let spectrum = fft ? fft.analyze() : [];
+
+  // 6. Calculate normalized energy levels (0.0 to 1.0)
+  let bass = energy(spectrum, 20, 250);
+  let mid = energy(spectrum, 250, 2000);
+  let treble = energy(spectrum, 2000, 12000);
+
+  let orbitSpeed = frameCount * 0.01;
+  lights();
+
+  // Scene-wide camera rotations
+  rotateY(frameCount * 0.005);
+  rotateX(PI / 6 + sin(frameCount * 0.003) * 0.2);
+
+  for (let i = 0; i < numShapes; i++) {
+    // Calculate orbital positioning using sine and cosine
+    let angle = (TWO_PI / numShapes) * i + orbitSpeed;
+    let x = cos(angle) * orbitRadius;
+    let z = sin(angle) * orbitRadius;
+
+    push();
+    translate(x, 0, z);
+    rotateY(-angle);
+    rotateX(frameCount * 0.02);
+
+    noStroke();
+
+    // Alternate frequency reactivity across shapes
+    if (i % 3 === 0) {
+      fill(255, 100, 100);
+      let bassSize = map(bass, 0, 1, 50, 160);
+      box(bassSize);
+    } else if (i % 3 === 1) {
+      fill(100, 255, 100);
+      let midSize = map(mid, 0, 1, 30, 110);
+      sphere(midSize);
+    } else {
+      fill(100, 100, 255);
+      let trebleSize = map(treble, 0, 1, 20, 80);
+      torus(trebleSize, 15);
+    }
+
+    pop();
+  }
 }
 
+// Helper function to average frequency energy in p5.sound v2
+function energy(spectrum, lowHz, highHz) {
+  if (!spectrum || spectrum.length === 0) return 0;
+  let nyquist = getAudioContext().sampleRate / 2;
+  let lo = floor((lowHz / nyquist) * spectrum.length);
+  let hi = min(spectrum.length - 1, ceil((highHz / nyquist) * spectrum.length));
+  let sum = 0;
+  for (let i = lo; i <= hi; i++) sum += spectrum[i];
+  let avg = sum / (hi - lo + 1);
+  return constrain(map(20 * Math.log10(avg + 1e-6), -100, -10, 0, 1), 0, 1);
+}
+
+// Start looping audio when user clicks canvas
 function mousePressed() {
-  if (mSound.isPlaying()) {
-    mSound.stop();
-  } else {
-    mSound.play();
+  if (mSound && !mSound.isPlaying()) {
+    mSound.loop();
   }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }
