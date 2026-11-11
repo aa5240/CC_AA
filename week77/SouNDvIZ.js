@@ -5,6 +5,7 @@ let volumeSlider;
 let useMic = false;
 let numShapes = 30;
 let baseRadius = 1000;
+let videos = [];
 let videoNames = [
   'DSCN1718', 'DSCN1719', 'DSCN1720', 'DSCN1721', 'DSCN1723', 'DSCN1724', 'DSCN1725',
   'DSCN1726', 'DSCN1727', 'DSCN1728', 'DSCN1729', 'DSCN1730', 'DSCN1731', 'DSCN1733', 
@@ -31,6 +32,7 @@ async function setup() {
   bgVideo = createVideo([`assets/${name}.mp4`, `assets/${name}.webm`]);
   bgVideo.hide();
   bgVideo.loop();
+  
 
   // Load sound and GLSL shaders asynchronously
   try {
