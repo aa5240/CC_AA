@@ -3,8 +3,8 @@ let mic;
 let fft;
 let volumeSlider;
 let useMic = false;
-let numShapes = 7;
-let baseRadius = 300;
+let numShapes = 30;
+let baseRadius = 1000;
 
 // 1. Asynchronous setup using p5.js v2
 async function setup() {
@@ -41,7 +41,7 @@ function draw() {
   // Retrieve current frequency spectrum
   let spectrum = fft ? fft.analyze() : [];
 
-  let bass = energy(spectrum, 20, 250);
+  let bass = energy(spectrum, 20, 500);
   let mid = energy(spectrum, 250, 2000);
   let treble = energy(spectrum, 2000, 12000);
 
@@ -58,7 +58,7 @@ function draw() {
     push();
     translate(x, 0, z);
     rotateY(-angle);
-    rotateX(frameCount * 0.02);
+    rotateX(frameCount * 0.01);
 
     noStroke();
 
