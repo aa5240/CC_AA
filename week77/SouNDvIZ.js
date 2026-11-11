@@ -144,7 +144,7 @@ function keyPressed() {
     }
   }
 
-  if (key === ' ') {
+  if (key === 'p' || key === 'P' ) {
     if (mSound.isPlaying()) {
       mSound.pause();
     } else {
