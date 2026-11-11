@@ -13,6 +13,10 @@ async function setup() {
   // Load sound asynchronously in p5.js v2
   try {
     mSound = await loadSound('PER_FINAL.mp3');
+    userStartAudio();
+    if (mSound && mSound.isLoaded()) {
+      mSound.loop(); // Start looping audio automatically
+    }
   } catch (err) {
     console.log('Audio loading error:', err);
   }
@@ -21,9 +25,12 @@ async function setup() {
 function draw() {
   background(20);
 
-  // Autonomous 3D lighting and scene camera rotation
+  // Autonomous 3D lighting
   lights();
+
+  // 1. Scene-wide camera rotations (Y spin + subtle dynamic X tilt)
   rotateY(frameCount * 0.005);
+  rotateX(PI / 6 + sin(frameCount * 0.003) * 0.2); // Gentle multi-dimensional tilt!
 
   // Analyze frequency spectrum each frame
   if (fft) {
