@@ -52,6 +52,7 @@ class MorphingObject {
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
+  // Initialize amplitude analyzer
   amplitude = new p5.Amplitude();
 
   // Load sound asynchronously in p5.js v2
@@ -94,6 +95,7 @@ function draw() {
 }
 
 function mousePressed() {
+  // Resume browser audio context on click
   userStartAudio();
 
   if (mSound && mSound.isLoaded() && !mSound.isPlaying()) {
