@@ -1,103 +1,59 @@
-// Global variables for audio, analyzer, and 3D objects
 let mSound;
-let amplitude;
-let shapeObjects = [];
-
-let videoNames = [
-  'DSCN1718', 'DSCN1719', 'DSCN1720', 'DSCN1721', 'DSCN1723', 'DSCN1724', 'DSCN1725'
-];
-
-// Class to manage 3D orbital object movement and shape morphing
-class MorphingObject {
-  constructor(angle, radius, baseSize, videoElement) {
-    this.baseAngle = angle;
-    this.orbitRadius = radius;
-    this.baseSize = baseSize;
-    this.video = videoElement;
-  }
-
-  display(orbitSpeed, pulseBoost, volumeLevel) {
-    push();
-    let currentAngle = this.baseAngle + orbitSpeed;
-    let currentX = cos(currentAngle) * this.orbitRadius;
-    let currentZ = sin(currentAngle) * this.orbitRadius;
-
-    translate(currentX, 0, currentZ);
-    rotateY(-currentAngle);
-    rotateX(frameCount * 0.01);
-
-    // Apply video texture to 3D geometry
-    if (this.video) {
-      texture(this.video);
-    }
-    noStroke();
-
-    let size = this.baseSize + pulseBoost;
-
-    // Morph 3D geometry based on audio volume thresholds
-    if (volumeLevel > 0.4) {
-      torus(size * 0.6, size * 0.2);
-    } else if (volumeLevel > 0.25) {
-      cylinder(size * 0.5, size);
-    } else if (volumeLevel > 0.1) {
-      sphere(size * 0.6);
-    } else {
-      box(size);
-    }
-
-    pop();
-  }
-}
+let numShapes = 7;
+let orbitRadius = 300;
 
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
-
-  // Initialize amplitude analyzer
-  amplitude = new p5.Amplitude();
 
   // Load sound asynchronously in p5.js v2
   try {
     mSound = await loadSound('PER_FINAL.mp3');
   } catch (err) {
-    console.log('Audio file load error:', err);
-  }
-
-  let total = videoNames.length;
-  let orbitRadius = 600;
-
-  for (let i = 0; i < total; i++) {
-    let name = videoNames[i];
-    let v = createVideo([`assets/${name}.mp4`, `assets/${name}.webm`]);
-    v.volume(0);  // Mute video audio for browser autoplay rules
-    v.loop();     // Continuously loop video
-    v.hide();     // Hide raw HTML element
-
-    let baseAngle = (TWO_PI / total) * i;
-    shapeObjects.push(new MorphingObject(baseAngle, orbitRadius, 180, v));
+    console.log('Audio loading error:', err);
   }
 }
 
 function draw() {
   background(20);
 
-  // Enable mouse camera navigation in 3D WebGL space
+  // Enable mouse camera control and 3D lighting
   orbitControl();
   lights();
 
-  let level = amplitude ? amplitude.getLevel() : 0;
-  let pulseBoost = map(level, 0, 1, 0, 150);
-  let orbitSpeed = frameCount * 0.001;
+  let orbitSpeed = frameCount * 0.01;
+  let pulse = sin(frameCount * 0.05) * 30; // Harmonic size pulse
 
-  // Render each morphing 3D object
-  for (let obj of shapeObjects) {
-    obj.display(orbitSpeed, pulseBoost, level);
+  for (let i = 0; i < numShapes; i++) {
+    // Calculate orbital ring coordinates around the center
+    let angle = (TWO_PI / numShapes) * i + orbitSpeed;
+    let x = cos(angle) * orbitRadius;
+    let z = sin(angle) * orbitRadius;
+
+    push();
+    translate(x, 0, z);
+    rotateY(-angle);
+    rotateX(frameCount * 0.02);
+
+    fill((i * 45) % 360, 180, 220);
+    noStroke();
+
+    let size = 80 + pulse;
+
+    // Alternate 3D geometry types across the orbital ring
+    if (i % 3 === 0) {
+      box(size);
+    } else if (i % 3 === 1) {
+      sphere(size * 0.6);
+    } else {
+      torus(size * 0.5, size * 0.2);
+    }
+
+    pop();
   }
 }
 
 function mousePressed() {
-  // Resume browser audio context on click
-  userStartAudio();
-
+  // Trigger looping playback on user interaction
   if (mSound && mSound.isLoaded() && !mSound.isPlaying()) {
     mSound.loop();
   }
