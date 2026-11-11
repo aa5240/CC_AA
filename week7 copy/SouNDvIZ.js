@@ -4,11 +4,10 @@ let amplitude;
 let shapeObjects = [];
 
 let videoNames = [
-  'DSCN1718', 'DSCN1719', 'DSCN1720', 'DSCN1721', 'DSCN1723', 'DSCN1724', 'DSCN1725',
-  'DSCN1726', 'DSCN1727', 'DSCN1728', 'DSCN1729', 'DSCN1730', 'DSCN1731', 'DSCN1733'
+  'DSCN1718', 'DSCN1719', 'DSCN1720', 'DSCN1721', 'DSCN1723', 'DSCN1724', 'DSCN1725'
 ];
 
-// Class to handle 3D orbital object movement and shape morphing
+// Class to manage 3D orbital object movement and shape morphing
 class MorphingObject {
   constructor(angle, radius, baseSize, videoElement) {
     this.baseAngle = angle;
@@ -25,23 +24,25 @@ class MorphingObject {
 
     translate(currentX, 0, currentZ);
     rotateY(-currentAngle);
-    rotateX(frameCount * 0.01); // Subtle continuous rotation
+    rotateX(frameCount * 0.01);
 
-    // Apply video texture to active 3D geometry
-    texture(this.video);
+    // Apply video texture to 3D geometry
+    if (this.video) {
+      texture(this.video);
+    }
     noStroke();
 
     let size = this.baseSize + pulseBoost;
 
-    // Morph 3D geometry based on audio volume thresholds!
+    // Morph 3D geometry based on audio volume thresholds
     if (volumeLevel > 0.4) {
-      torus(size * 0.6, size * 0.2); // Loudest beats morph into a torus
+      torus(size * 0.6, size * 0.2);
     } else if (volumeLevel > 0.25) {
-      cylinder(size * 0.5, size);    // Medium-high volume morphs into a cylinder
+      cylinder(size * 0.5, size);
     } else if (volumeLevel > 0.1) {
-      sphere(size * 0.6);            // Subtle volume morphs into a sphere
+      sphere(size * 0.6);
     } else {
-      box(size);                     // Quiet moments render as a box
+      box(size);
     }
 
     pop();
@@ -53,6 +54,7 @@ async function setup() {
 
   amplitude = new p5.Amplitude();
 
+  // Load sound asynchronously in p5.js v2
   try {
     mSound = await loadSound('PER_FINAL.mp3');
   } catch (err) {
@@ -77,7 +79,7 @@ async function setup() {
 function draw() {
   background(20);
 
-  // Enable mouse camera movement in WebGL space
+  // Enable mouse camera navigation in 3D WebGL space
   orbitControl();
   lights();
 
@@ -85,7 +87,7 @@ function draw() {
   let pulseBoost = map(level, 0, 1, 0, 150);
   let orbitSpeed = frameCount * 0.001;
 
-  // Render each morphing 3D object in the orbital ring
+  // Render each morphing 3D object
   for (let obj of shapeObjects) {
     obj.display(orbitSpeed, pulseBoost, level);
   }
