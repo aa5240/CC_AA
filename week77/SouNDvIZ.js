@@ -119,7 +119,7 @@ function energy(spectrum, lowHz, highHz) {
 // Click to resume audio context and start sound loop
 function mousePressed() {
   userStartAudio();
-  if (mSound && !mSound.isPlaying() && !useMic) {
+  if (mSound && !mSound.isPlaying()) {
     mSound.loop();
   }
 }
