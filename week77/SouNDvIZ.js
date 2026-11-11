@@ -9,7 +9,10 @@ let baseRadius = 1000;
 let bgVideo;
 let myShader;
 
-// Asynchronous setup in p5.js v2
+// Array to hold active treble particles
+let particles = [];
+
+// Asynchronous setup using p5.js v2
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
@@ -36,11 +39,11 @@ async function setup() {
 function draw() {
   background(20);
 
-  // 1. Render Video Background (with resetShader)
+  // 1. Render Looping Video Background
   if (bgVideo) {
     push();
     resetMatrix();
-    resetShader(); // Ensure video plane is drawn with default texture rendering
+    resetShader();
     translate(0, 0, -1500);
     noStroke();
     texture(bgVideo);
@@ -66,7 +69,7 @@ function draw() {
 
   lights();
 
-  // 2. Activate Custom Shader for 3D Shapes
+  // 2. Render 3D Shapes with Custom Shader
   if (myShader) {
     shader(myShader);
     myShader.setUniform('u_time', millis() * 0.001);
@@ -74,7 +77,6 @@ function draw() {
     myShader.setUniform('u_treble', treble);
   }
 
-  // 3. Render Orbiting 3D Shapes
   for (let i = 0; i < numShapes; i++) {
     let angle = (TWO_PI / numShapes) * i + orbitSpeed;
     let x = cos(angle) * currentRadius;
@@ -100,6 +102,50 @@ function draw() {
 
     pop();
   }
+
+  // 3. Spawn Treble Burst Particles
+  if (treble > 0.35) {
+    let spawnCount = floor(map(treble, 0.35, 1.0, 2, 8));
+    for (let i = 0; i < spawnCount; i++) {
+      particles.push(new Particle(0, 0, 0, treble));
+    }
+  }
+
+  // 4. Update and Draw 3D Fading Particles
+  resetShader(); // Reset shader for particle rendering
+  for (let i = particles.length - 1; i >= 0; i--) {
+    particles[i].update();
+    particles[i].draw();
+
+    if (particles[i].life <= 0) {
+      particles.splice(i, 1);
+    }
+  }
+}
+
+// 3D Fading Particle Class Definition
+class Particle {
+  constructor(x, y, z, energyLevel) {
+    this.pos = createVector(x, y, z);
+    // Random 3D direction vector scaled by treble energy
+    this.vel = p5.Vector.random3D().mult(random(5, 15) * energyLevel);
+    this.life = 255;
+    this.size = random(8, 20);
+  }
+
+  update() {
+    this.pos.add(this.vel);
+    this.life -= 8; // Fade transparency over time
+  }
+
+  draw() {
+    push();
+    translate(this.pos.x, this.pos.y, this.pos.z);
+    noStroke();
+    fill(120, 220, 255, this.life);
+    sphere(this.size);
+    pop();
+  }
 }
 
 // Frequency energy calculation helper
@@ -115,7 +161,7 @@ function energy(spectrum, lowHz, highHz) {
 }
 
 function mousePressed() {
-  userStartAudio(); // Unlock browser audio permissions
+  userStartAudio();
   if (mSound && !mSound.isPlaying() && !useMic) {
     mSound.loop();
   }
