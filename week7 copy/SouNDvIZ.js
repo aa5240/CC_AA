@@ -1,9 +1,13 @@
 let mSound;
+let fft;
 let numShapes = 7;
 let orbitRadius = 300;
 
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
+
+  // Initialize FFT frequency analyzer
+  fft = new p5.FFT();
 
   // Load sound asynchronously in p5.js v2
   try {
@@ -16,15 +20,23 @@ async function setup() {
 function draw() {
   background(20);
 
-  // Enable mouse camera control and 3D lighting
+  // Enable WebGL mouse camera controls
   orbitControl();
   lights();
 
+  // Analyze frequency spectrum each frame
+  if (fft) {
+    fft.analyze();
+  }
+
+  // Read energy for low, mid, and high frequency ranges (0 to 255)
+  let bass = fft ? fft.getEnergy('bass') : 0;
+  let mid = fft ? fft.getEnergy('mid') : 0;
+  let treble = fft ? fft.getEnergy('treble') : 0;
+
   let orbitSpeed = frameCount * 0.01;
-  let pulse = sin(frameCount * 0.05) * 30; // Harmonic size pulse
 
   for (let i = 0; i < numShapes; i++) {
-    // Calculate orbital ring coordinates around the center
     let angle = (TWO_PI / numShapes) * i + orbitSpeed;
     let x = cos(angle) * orbitRadius;
     let z = sin(angle) * orbitRadius;
@@ -34,18 +46,24 @@ function draw() {
     rotateY(-angle);
     rotateX(frameCount * 0.02);
 
-    fill((i * 45) % 360, 180, 220);
     noStroke();
 
-    let size = 80 + pulse;
-
-    // Alternate 3D geometry types across the orbital ring
+    // Alternate frequency reactivity across different 3D shapes
     if (i % 3 === 0) {
-      box(size);
+      // Bass reactivity: boxes pulse with low frequencies
+      fill(255, 100, 100);
+      let bassSize = map(bass, 0, 255, 50, 160);
+      box(bassSize);
     } else if (i % 3 === 1) {
-      sphere(size * 0.6);
+      // Mid reactivity: spheres expand with vocal/mid frequencies
+      fill(100, 255, 100);
+      let midSize = map(mid, 0, 255, 30, 110);
+      sphere(midSize);
     } else {
-      torus(size * 0.5, size * 0.2);
+      // Treble reactivity: toruses react to high frequencies
+      fill(100, 100, 255);
+      let trebleSize = map(treble, 0, 255, 20, 80);
+      torus(trebleSize, 15);
     }
 
     pop();
@@ -53,7 +71,8 @@ function draw() {
 }
 
 function mousePressed() {
-  // Trigger looping playback on user interaction
+  userStartAudio();
+
   if (mSound && mSound.isLoaded() && !mSound.isPlaying()) {
     mSound.loop();
   }
