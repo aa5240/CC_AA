@@ -1,4 +1,4 @@
-
+// cleaned up the code with the help of LLM.
 let pMapper;
 let quad0, quad1; // two surfaces
 let centerColors = [];
