@@ -25,7 +25,7 @@ async function setup() {
 
   try {
     // Load sound file and custom shaders asynchronously
-    mSound = await loadSound('assets/PER_FINAL.mp3');
+    mSound = await loadSound('assets/Space_Time.mp3');
     mSound.connect(fft);
 
     myShader = await loadShader('shaders/myShader.vert', 'shaders/myShader.frag');
