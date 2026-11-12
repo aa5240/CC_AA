@@ -35,7 +35,7 @@ async function setup() {
 }
 
 function draw() {
-  background(20);
+  background(0);
 
   // 1. Render Looping Video Background
   if (bgVideo) {
@@ -103,7 +103,7 @@ function draw() {
   }
 
   // 5. Spawn & Update Treble Fading Particles
-  if (treble > 0.35) {
+  if (treble > 0) {
     let count = floor(map(treble, 0.35, 1.0, 2, 8));
     for (let i = 0; i < count; i++) {
       particles.push(new Particle(0, 0, 0, treble));
@@ -125,7 +125,7 @@ function draw() {
     resetShader();
     noFill();
     stroke(100, 220, 255);
-    strokeWeight(3);
+    strokeWeight(10);
 
     beginShape();
     let ringRadius = currentRadius * 0.6;
@@ -144,9 +144,9 @@ function draw() {
 class Particle {
   constructor(x, y, z, energyLevel) {
     this.pos = createVector(x, y, z);
-    this.vel = p5.Vector.random3D().mult(random(5, 15) * energyLevel);
+    this.vel = p5.Vector.random3D().mult(random(5, 400) * energyLevel);
     this.life = 255;
-    this.size = random(8, 20);
+    this.size = random(8, 400);
   }
 
   update() {
