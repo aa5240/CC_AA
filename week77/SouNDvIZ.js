@@ -6,8 +6,8 @@ let particles = [];
 let playButton;
 let volumeSlider;
 
-let numShapes = 24;
-let orbitRadius = 550;
+let numShapes = 86;
+let orbitRadius = 600;
 
 // Asynchronous setup in p5.js v2 (global mode)
 async function setup() {
