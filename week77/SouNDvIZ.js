@@ -6,10 +6,10 @@ let bgVideo;
 let myShader;
 let particles = [];
 
-let numShapes = 35; // Increased shape count for a denser ring
+let numShapes = 35;
 let baseRadius = 1000;
 
-// Asynchronous asset loading in p5.js v2
+// Asynchronous setup using p5.js v2
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
@@ -19,12 +19,13 @@ async function setup() {
   volumeSlider = createSlider(0, 100, 30);
   volumeSlider.position(20, 20);
 
-  // Load looping background video element
+  // Load background video element
   bgVideo = createVideo(['assets/DSCN1412.mp4']);
   bgVideo.hide();
   bgVideo.volume(0); // Mute background video element
 
   try {
+    // Await audio and shader asset loading
     mSound = await loadSound('assets/PER_FINAL.mp3');
     mSound.connect(fft);
 
@@ -42,11 +43,11 @@ function draw() {
     mSound.amp(vol);
   }
 
-  // 1. Draw Looping Background Video Plane
+  // 1. Draw Looping Video Background Plane
   if (bgVideo) {
     push();
     resetMatrix();
-    resetShader();
+    resetShader(); // Use default rendering for video plane
     translate(0, 0, -1500);
     noStroke();
     texture(bgVideo);
@@ -67,7 +68,7 @@ function draw() {
 
   lights();
 
-  // 3. Render 3D Shapes with Video Textures & Shader Variations
+  // 3. Render 3D Shapes with Video Textures & Shader
   for (let i = 0; i < numShapes; i++) {
     let angle = (TWO_PI / numShapes) * i + orbitSpeed;
     let x = cos(angle) * currentRadius;
@@ -79,7 +80,6 @@ function draw() {
     rotateX(frameCount * 0.015);
     noStroke();
 
-    // Alternate between custom GLSL shader and live video textures
     if (i % 2 === 0 && myShader) {
       shader(myShader);
       myShader.setUniform('u_time', millis() * 0.001);
@@ -87,10 +87,9 @@ function draw() {
       myShader.setUniform('u_treble', treble);
     } else if (bgVideo) {
       resetShader();
-      texture(bgVideo); // Apply live video stream onto 3D shape faces
+      texture(bgVideo);
     }
 
-    // Cycle through 5 distinct WebGL 3D shapes driven by audio bands
     if (i % 5 === 0) {
       let boxSize = map(bass, 0, 1, 50, 180);
       box(boxSize);
@@ -151,7 +150,7 @@ function draw() {
   }
 }
 
-// 3D Particle Class
+// 3D Particle Class Definition
 class Particle {
   constructor(x, y, z, energyLevel) {
     this.pos = createVector(x, y, z);
@@ -175,7 +174,7 @@ class Particle {
   }
 }
 
-// Frequency energy helper for p5.sound v2
+// Frequency energy calculation helper for p5.sound v2
 function energy(spectrum, lowHz, highHz) {
   if (!spectrum || spectrum.length === 0) return 0;
   let nyquist = getAudioContext().sampleRate / 2;
@@ -188,7 +187,7 @@ function energy(spectrum, lowHz, highHz) {
 }
 
 function mousePressed() {
-  userStartAudio();
+  userStartAudio(); // Resume browser audio permissions
   if (bgVideo) {
     bgVideo.loop();
   }
