@@ -13,7 +13,7 @@ let orbitRadius = 600;
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
-  fft = new p5.FFT(256);
+  fft = new p5.FFT(1000);
 
   // 1. Create Play/Pause Button
   playButton = createButton('Play');
@@ -62,7 +62,7 @@ function draw() {
     push();
     translate(x, 0, z);
     rotateY(-angle);
-    rotateX(frameCount * 0.015);
+    rotateX(frameCount * 0.005);
     noStroke();
 
     if (i % 2 === 0) {
@@ -76,13 +76,13 @@ function draw() {
   }
 
   // Particle Triggers
-  if (bass > 0.45) {
+  if (bass > 0.10) {
     particles.push(new Particle(0, 0, 0, 'bass', bass));
   }
-  if (mid > 0.40) {
+  if (mid > 0.10) {
     particles.push(new Particle(0, 0, 0, 'mid', mid));
   }
-  if (treble > 0.35) {
+  if (treble > 0.10) {
     let sparkCount = floor(map(treble, 0.35, 1.0, 2, 6));
     for (let i = 0; i < sparkCount; i++) {
       particles.push(new Particle(0, 0, 0, 'treble', treble));
@@ -119,11 +119,11 @@ class Particle {
   constructor(x, y, z, type, intensity) {
     this.pos = createVector(x, y, z);
     this.type = type;
-    this.life = 255;
+    this.life = 1000;
 
     if (this.type === 'bass') {
-      this.vel = p5.Vector.random3D().mult(random(2, 6) * intensity);
-      this.size = random(25, 55);
+      this.vel = p5.Vector.random3D().mult(random(0.5, 15) * intensity);
+      this.size = random(10, 80);
       this.fadeRate = 4;
       this.col = color(255, 100, 150);
     } else if (this.type === 'mid') {
@@ -132,9 +132,9 @@ class Particle {
       this.fadeRate = 6;
       this.col = color(150, 255, 120);
     } else {
-      this.vel = p5.Vector.random3D().mult(random(8, 20) * intensity);
-      this.size = random(4, 12);
-      this.fadeRate = 12;
+      this.vel = p5.Vector.random3D().mult(random(0.5, 20) * intensity);
+      this.size = random(10, 60);
+      this.fadeRate = 5;
       this.col = color(100, 220, 255);
     }
   }
