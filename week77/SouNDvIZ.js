@@ -105,7 +105,12 @@ function energy(spectrum, lowHz, highHz) {
 }
 
 function mousePressed() {
-  userStartAudio();
+  if (typeof userStartAudio === 'function') {
+    userStartAudio();
+  } else if (getAudioContext().state !== 'running') {
+    getAudioContext().resume();
+  }
+  
   if (mSound && !mSound.isPlaying()) {
     mSound.loop();
   }
