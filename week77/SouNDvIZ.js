@@ -2,18 +2,30 @@ let mSound;
 let fft;
 let particles = [];
 
-let numShapes = 100;
-let orbitRadius = 1000;
+// DOM UI Controls
+let playButton;
+let volumeSlider;
+
+let numShapes = 24;
+let orbitRadius = 550;
 
 // Asynchronous setup in p5.js v2 (global mode)
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
-  // Initialize FFT frequency analyzer
   fft = new p5.FFT(256);
 
+  // 1. Create Play/Pause Button
+  playButton = createButton('Play');
+  playButton.position(20, 20);
+  playButton.mouseClicked(togglePlay);
+
+  // 2. Create Volume Slider (0 to 100, starting at 30)
+  volumeSlider = createSlider(0, 100, 30);
+  volumeSlider.position(90, 20);
+
   try {
-    // Await loading sound file asynchronously
+    // Load audio asynchronously with await
     mSound = await loadSound('assets/PER_FINAL.mp3');
     mSound.connect(fft);
   } catch (err) {
@@ -23,9 +35,16 @@ async function setup() {
 
 function draw() {
   background(15, 15, 25);
+
+  // 3. Apply Live Volume Slider Reading to Sound Output
+  if (mSound) {
+    let vol = volumeSlider.value() / 100;
+    mSound.amp(vol);
+  }
+
   orbitControl();
 
-  // 1. Analyze Audio Frequencies
+  // Extract Audio Frequencies
   let spectrum = fft ? fft.analyze() : [];
   let bass = energy(spectrum, 20, 250);
   let mid = energy(spectrum, 250, 2000);
@@ -33,7 +52,7 @@ function draw() {
 
   lights();
 
-  // 2. Render Orbiting Ring
+  // Render Orbiting Shapes Ring
   let orbitSpeed = frameCount * 0.01;
   for (let i = 0; i < numShapes; i++) {
     let angle = (TWO_PI / numShapes) * i + orbitSpeed;
@@ -56,15 +75,13 @@ function draw() {
     pop();
   }
 
-  // 3. Emit Audio-Reactive Particles
+  // Particle Triggers
   if (bass > 0.45) {
     particles.push(new Particle(0, 0, 0, 'bass', bass));
   }
-
   if (mid > 0.40) {
     particles.push(new Particle(0, 0, 0, 'mid', mid));
   }
-
   if (treble > 0.35) {
     let sparkCount = floor(map(treble, 0.35, 1.0, 2, 6));
     for (let i = 0; i < sparkCount; i++) {
@@ -72,31 +89,35 @@ function draw() {
     }
   }
 
-  // 4. Update, Apply Physics, and Draw Active Particles
+  // Update Particles
   resetShader();
   for (let i = particles.length - 1; i >= 0; i--) {
-    // Environmental forces: gentle downward gravity & slight horizontal wind
-    let gravity = createVector(0, 0.12, 0);
-    let wind = createVector(sin(frameCount * 0.02) * 0.05, 0, 0.02);
-
-    particles[i].applyForce(gravity);
-    particles[i].applyForce(wind);
-
     particles[i].update();
     particles[i].draw();
-
     if (particles[i].life <= 0) {
       particles.splice(i, 1);
     }
   }
 }
 
-// Physics-Driven 3D Particle Class
+// 4. Custom Function to Toggle Sound Play & Pause State
+function togglePlay() {
+  userStartAudio(); // Unlock browser audio context
+  if (mSound) {
+    if (mSound.isPlaying()) {
+      mSound.pause();
+      playButton.html('Play');
+    } else {
+      mSound.loop();
+      playButton.html('Pause');
+    }
+  }
+}
+
+// Physics Particle Class
 class Particle {
   constructor(x, y, z, type, intensity) {
     this.pos = createVector(x, y, z);
-    this.vel = createVector(0, 0, 0);
-    this.acc = createVector(0, 0, 0); // Force accumulator
     this.type = type;
     this.life = 255;
 
@@ -118,15 +139,8 @@ class Particle {
     }
   }
 
-  // Accumulate incoming environmental force vectors
-  applyForce(force) {
-    this.acc.add(force);
-  }
-
   update() {
-    this.vel.add(this.acc); // Add acceleration to velocity
-    this.pos.add(this.vel); // Move particle by velocity
-    this.acc.mult(0);       // Reset acceleration for next frame
+    this.pos.add(this.vel);
     this.life -= this.fadeRate;
   }
 
@@ -158,18 +172,6 @@ function energy(spectrum, lowHz, highHz) {
   for (let i = lo; i <= hi; i++) sum += spectrum[i];
   let avg = sum / (hi - lo + 1);
   return constrain(map(20 * Math.log10(avg + 1e-6), -100, -10, 0, 1), 0, 1);
-}
-
-function mousePressed() {
-  if (typeof userStartAudio === 'function') {
-    userStartAudio();
-  } else if (getAudioContext().state !== 'running') {
-    getAudioContext().resume();
-  }
-
-  if (mSound && !mSound.isPlaying()) {
-    mSound.loop();
-  }
 }
 
 function windowResized() {
