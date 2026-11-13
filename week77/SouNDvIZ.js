@@ -2,6 +2,10 @@ let mSound;
 let fft;
 let particles = [];
 
+// Orbiting ring configuration
+let numShapes = 24;
+let orbitRadius = 550;
+
 // Asynchronous setup in p5.js v2 (global mode)
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
@@ -18,19 +22,47 @@ async function setup() {
 
 function draw() {
   background(15, 15, 25);
-  orbitControl();
+  orbitControl(); // Interactive mouse camera controls
 
   // 1. Analyze Audio Frequencies
   let spectrum = fft ? fft.analyze() : [];
   let bass = energy(spectrum, 20, 250);
   let treble = energy(spectrum, 2000, 12000);
 
-  // 2. Trigger Heavy Bass Cube Pulses
+  lights();
+
+  // 2. Render Orbiting Ring of Audio-Reactive 3D Shapes
+  let orbitSpeed = frameCount * 0.01;
+  for (let i = 0; i < numShapes; i++) {
+    let angle = (TWO_PI / numShapes) * i + orbitSpeed;
+    let x = cos(angle) * orbitRadius;
+    let z = sin(angle) * orbitRadius;
+
+    push();
+    translate(x, 0, z);
+    rotateY(-angle);
+    rotateX(frameCount * 0.015);
+    noStroke();
+
+    // Alternate shapes and colors reacting to bass & treble energy
+    if (i % 2 === 0) {
+      fill(255, 120, 160);
+      let bassBoxSize = map(bass, 0, 1, 30, 110);
+      box(bassBoxSize);
+    } else {
+      fill(100, 210, 255);
+      let trebleSphereSize = map(treble, 0, 1, 20, 75);
+      sphere(trebleSphereSize);
+    }
+    pop();
+  }
+
+  // 3. Trigger Heavy Bass Cube Pulses from Center
   if (bass > 0.45) {
     particles.push(new Particle(0, 0, 0, 'bass', bass));
   }
 
-  // 3. Trigger High Treble Sparkle Bursts
+  // 4. Trigger High Treble Sparkle Bursts from Center
   if (treble > 0.35) {
     let sparkCount = floor(map(treble, 0.35, 1.0, 2, 6));
     for (let i = 0; i < sparkCount; i++) {
@@ -38,7 +70,7 @@ function draw() {
     }
   }
 
-  // 4. Update, Render, and Clean Up Active Particles
+  // 5. Update, Render, and Clean Up Active Particles
   resetShader();
   for (let i = particles.length - 1; i >= 0; i--) {
     particles[i].update();
@@ -110,7 +142,7 @@ function mousePressed() {
   } else if (getAudioContext().state !== 'running') {
     getAudioContext().resume();
   }
-  
+
   if (mSound && !mSound.isPlaying()) {
     mSound.loop();
   }
