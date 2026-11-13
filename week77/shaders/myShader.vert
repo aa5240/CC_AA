@@ -7,20 +7,20 @@ attribute vec2 aTexCoord;
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
 
+// Uniform variables received from p5.js
 uniform float u_time;
 uniform float u_bass;
 
 varying vec2 vTexCoord;
-varying float vDisplacement;
 
 void main() {
   vTexCoord = aTexCoord;
 
-  // Deform 3D surface vertices along normals using u_bass
-  float wave = sin(aPosition.x * 0.05 + u_time * 6.0) * cos(aPosition.y * 0.05 + u_time * 6.0);
-  vec3 displacedPosition = aPosition + aNormal * (wave * u_bass * 50.0);
-
-  vDisplacement = wave * u_bass;
+  // Wave calculation combining spatial position, time, and bass amplitude
+  float wave = sin(aPosition.x * 0.05 + u_time * 5.0);
+  
+  // Push vertices outward along normal vectors proportional to bass energy
+  vec3 displacedPosition = aPosition + aNormal * (wave * u_bass * 45.0);
 
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(displacedPosition, 1.0);
 }
