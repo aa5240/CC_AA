@@ -6,7 +6,7 @@ let particles = [];
 let playButton;
 let volumeSlider;
 
-let numShapes = 24;
+let numShapes = 100;
 let orbitRadius = 550;
 
 // Asynchronous setup in p5.js v2 (global mode)
@@ -61,7 +61,7 @@ function draw() {
     translate(x, 0, z);
     rotateY(-angle);
     noStroke();
-    fill(i % 2 === 0 ? color(255, 120, 160) : color(100, 210, 255));
+    fill(i % 2 === 0 ? color(0, 120, 160) : color(0, 210, 255));
     box(map(bass, 0, 1, 30, 90));
     pop();
   }
