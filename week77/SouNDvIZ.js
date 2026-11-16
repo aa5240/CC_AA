@@ -8,10 +8,12 @@ const numShapes = 100;
 const orbitRadius = 550;
 const audioPath = 'assets/PER_FINAL.mp3';
 
+// Asynchronous setup in p5.js v2 (global mode)
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
-  fft = new p5.FFT(0.8, 512);
+  // Initialize FFT with 512 frequency bins
+  fft = new p5.FFT(512);
 
   playButton = createButton('Loading audio...');
   playButton.position(20, 20);
@@ -23,8 +25,9 @@ async function setup() {
   volumeSlider.input(updateVolume);
 
   try {
+    // Load sound asynchronously using await
     mSound = await loadSound(audioPath);
-    fft.setInput(mSound);
+    mSound.connect(fft); // Route audio output into FFT analyzer
     updateVolume();
 
     playButton.html('Play');
@@ -43,10 +46,13 @@ function draw() {
 
   let bass = 0;
 
+  // 1. Analyze frequency spectrum when audio is active
   if (mSound && mSound.isPlaying()) {
-    bass = energy(fft.analyze(), 20, 250);
+    let spectrum = fft.analyze();
+    bass = energy(spectrum, 20, 250);
   }
 
+  // 2. Render Orbiting Ring of Audio-Reactive Shapes
   const orbitSpeed = frameCount * 0.01;
 
   for (let i = 0; i < numShapes; i++) {
@@ -63,10 +69,13 @@ function draw() {
     pop();
   }
 
+  // 3. Trigger Bass Particle Explosions from Center
   if (mSound && mSound.isPlaying() && bass > 0.45) {
     particles.push(new Particle(0, 0, 0, bass));
   }
 
+  // 4. Update and Render Active Particles
+  resetShader();
   for (let i = particles.length - 1; i >= 0; i--) {
     particles[i].update();
     particles[i].draw();
@@ -81,7 +90,7 @@ async function togglePlay() {
   if (!mSound) return;
 
   try {
-    await userStartAudio();
+    await userStartAudio(); // Unlock browser Web Audio context
 
     if (mSound.isPlaying()) {
       mSound.pause();
@@ -102,6 +111,7 @@ function updateVolume() {
   }
 }
 
+// 3D Audio-Reactive Particle Class
 class Particle {
   constructor(x, y, z, intensity) {
     this.pos = createVector(x, y, z);
@@ -125,6 +135,7 @@ class Particle {
   }
 }
 
+// Frequency energy calculation helper for p5.sound v2
 function energy(spectrum, lowHz, highHz) {
   if (!spectrum || spectrum.length === 0) return 0;
 
@@ -141,7 +152,7 @@ function energy(spectrum, lowHz, highHz) {
   }
 
   const average = sum / (highBin - lowBin + 1);
-  return constrain(average / 255, 0, 1);
+  return constrain(map(20 * Math.log10(average + 1e-6), -100, -10, 0, 1), 0, 1);
 }
 
 function windowResized() {
