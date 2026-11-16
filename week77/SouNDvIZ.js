@@ -26,7 +26,7 @@ async function setup() {
 
   try {
     // Load audio asynchronously with await
-    mSound = await loadSound('assets/PER_FINAL.mp3');
+    mSound = await loadSound('week77/assets/PER_FINAL.mp3');
     mSound.connect(fft);
   } catch (err) {
     console.log('Audio load error:', err);
