@@ -13,7 +13,7 @@ let orbitRadius = 600;
 async function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
-  fft = new p5.FFT(1000);
+  fft = new p5.FFT(2048);
 
   // 1. Create Play/Pause Button
   playButton = createButton('Play');
