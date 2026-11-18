@@ -1,4 +1,3 @@
-let shapeObjects = [];
 let videos = [];
 
 // FaceMesh & Webcam Variables
@@ -16,9 +15,12 @@ let isAudioStarted = false;
 let scaleNotes = [220, 261.63, 293.66, 329.63, 392.00, 440, 523.25, 587.33];
 
 // Landmark index groups for facial features in ml5.faceMesh
-const mouthIndices = [1-9];
-const eyeIndices = [10-19];
-const noseIndices = [20-27];
+const mouthIndices = new Set([13, 14, 61, 78, 82, 87, 88, 291, 308, 311, 324, 402, 415]);
+const eyeIndices = new Set([
+  33, 133, 160, 158, 153, 144,
+  362, 263, 387, 385, 380, 373
+]);
+const noseIndices = new Set([1, 2, 4, 5, 6, 19, 94, 98]);
 
 let videoNames = [
   'DSCN1718', 'DSCN1719', 'DSCN1720', 'DSCN1721', 'DSCN1723', 'DSCN1724', 'DSCN1725',
@@ -71,12 +73,12 @@ function draw() {
   let spinAngle = frameCount * 0.02;
 
   // Render Face Mask when webcam face data and videos are ready
-  if (faces.length > 0 && videos.length >= 4) {
-    let face = faces; // Access active detected face object
+  if (faces.length > 0 && faces[0].keypoints && videos.length >= 4) {
+    let face = faces[0];
 
     // Measure mouth opening distance to control scale notes and delay echoes
-    let upperLip = face.keypoints[1];
-    let lowerLip = face.keypoints[2];
+    let upperLip = face.keypoints[13];
+    let lowerLip = face.keypoints[14];
     let mouthDistance = 10;
 
     if (upperLip && lowerLip) {
@@ -103,8 +105,8 @@ function draw() {
       let activeTex = getRegionVideo(j);
 
       // Convert 2D camera coordinates to WEBGL centered 3D space
-      let faceX = keypoint.x - width / 2;
-      let faceY = keypoint.y - height / 2;
+      let faceX = map(keypoint.x, 0, 640, -width / 2, width / 2);
+      let faceY = map(keypoint.y, 0, 480, -height / 2, height / 2);
       let faceZ = keypoint.z || 0;
 
       push();
@@ -120,7 +122,7 @@ function draw() {
     }
   } else {
     // Fallback orbital visualizer while webcam or FaceMesh loads
-    for (let i = 0; i < min(videos.length, 12); i++) {
+    for (let i = 0; i < min(videos.length, 21); i++) {
       let angle = (TWO_PI / 12) * i + spinAngle;
       push();
       translate(cos(angle) * 350, sin(angle) * 350, 0);
@@ -134,14 +136,14 @@ function draw() {
 
 // Helper function: Assigns valid video array elements to eyes, nose, mouth, and cheeks
 function getRegionVideo(index) {
-  if (mouthIndices.includes(index)) {
-    return videos; // Mouth video
-  } else if (eyeIndices.includes(index)) {
-    return videos[20]; // Eyes video
-  } else if (noseIndices.includes(index)) {
-    return videos[21]; // Nose video
+  if (mouthIndices.has(index)) {
+    return videos[index % videos.length]; // Mouth video
+  } else if (eyeIndices.has(index)) {
+    return videos[20 % videos.length]; // Eyes video
+  } else if (noseIndices.has(index)) {
+    return videos[21 % videos.length]; // Nose video
   } else {
-    return videos[28]; // Cheeks & face outline video
+    return videos[28 % videos.length]; // Cheeks & face outline video
   }
 }
 
