@@ -120,6 +120,8 @@ function draw() {
       box(cubeSize);
       pop();
     }
+
+    drawFaceRings(face.keypoints);
   } else {
     // Fallback orbital visualizer while webcam or FaceMesh loads
     for (let i = 0; i < min(videos.length, 21); i++) {
@@ -131,6 +133,51 @@ function draw() {
       box(40);
       pop();
     }
+  }
+}
+
+function drawFaceRings(keypoints) {
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+
+  for (let point of keypoints) {
+    if (!point || !Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+      continue;
+    }
+
+    minX = min(minX, point.x);
+    maxX = max(maxX, point.x);
+    minY = min(minY, point.y);
+    maxY = max(maxY, point.y);
+  }
+
+  if (!Number.isFinite(minX)) {
+    return;
+  }
+
+  let centerX = map((minX + maxX) / 2, 0, 640, -width / 2, width / 2);
+  let centerY = map((minY + maxY) / 2, 0, 480, -height / 2, height / 2);
+  let faceSize = max((maxX - minX) * width / 640, (maxY - minY) * height / 480);
+  let baseRadius = faceSize * 0.65;
+  let rotation = frameCount * 0.015;
+  let colors = [
+    [70, 220, 255],
+    [255, 100, 190],
+    [190, 130, 255]
+  ];
+
+  for (let i = 0; i < colors.length; i++) {
+    push();
+    translate(centerX, centerY, 25);
+    rotateX(rotation * (i + 1));
+    rotateY(rotation * (i % 2 === 0 ? 1 : -1));
+    rotateZ(rotation * 0.5);
+    ambientMaterial(...colors[i]);
+    noStroke();
+    torus(baseRadius * (0.8 + i * 0.2), max(2, baseRadius * 0.025), 48, 8);
+    pop();
   }
 }
 
